@@ -93,25 +93,17 @@ public class GameFieldView extends View {
     // ===========================================================
     @Override
     protected void onDraw(Canvas canvas) {
-        final Canvas c = canvas;
-        c.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getX() < SCREEN_WIDTH / 2) {
             final float X = event.getX();
             final float Y = event.getY();
             mPaint.setStyle(Paint.Style.FILL);
             mCanvas.drawCircle(X, Y, POINT_RADIUS, mPaint);
             mPaint.setStyle(Paint.Style.STROKE);
             mCanvas.drawCircle(X, Y, POINT_RADIUS * 3, mPaint);
-            mCanvas.save(2);
-            invalidate();
-        } else {
-            mCanvas.restoreToCount(2);
-            invalidate();
-        }
         return super.onTouchEvent(event);
     }
 
