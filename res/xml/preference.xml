@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="header"
+        android:layout="@layout/pref_header"/>
+    <PreferenceCategory
+        android:title="@string/players_settings"/>
+    <EditTextPreference
+        android:key="etpFirstPlayerName"
+        android:title="@string/first_player_name"
+        android:maxLines="1"
+        android:maxLength="30"/>
+    <EditTextPreference
+        android:key="etpSecondPlayerName"
+        android:title="@string/second_player_name"
+        android:maxLines="1"
+        android:maxLength="30"/>
+
+    <PreferenceCategory
+        android:title="@string/point_color_title"/>
+    <ListPreference
+        android:key="lpFirstPlayerColor"
+        android:title="@string/point_color_first_title"
+        android:entries="@array/colors_for_points"
+        android:entryValues="@array/colors_for_points_val"
+        android:defaultValue="@string/point_color_first_default"
+        android:dialogIcon="@drawable/icon_blue"/>
+    <ListPreference
+        android:key="lpSecondPlayerColor"
+        android:title="@string/point_color_second_title"
+        android:entries="@array/colors_for_points"
+        android:entryValues="@array/colors_for_points_val"
+        android:defaultValue="@string/point_color_second_default"
+        android:dialogIcon="@drawable/icon_black"/>
+    <ListPreference
+        android:key="lpFieldLinesColor"
+        android:title="@string/field_lines_color_title"
+        android:entries="@array/colors_for_lines"
+        android:entryValues="@array/colors_for_lines_val"
+        android:defaultValue="@string/field_lines_color_default"
+        android:dialogIcon="@drawable/icon_light_blue"/>
+
+
+    <PreferenceCategory
+        android:title="@string/extra_settings"/>
+    <CheckBoxPreference
+        android:key="cbpPlayWithAndroid"
+        android:title="@string/play_with_android"/>
+    <CheckBoxPreference
+        android:key="cbpSecondClick"
+        android:title="@string/double_click_title"/>
+    <CheckBoxPreference
+        android:key="cbpExtraMove"
+        android:title="@string/extra_move_title"/>
+    <!--<EditTextPreference-->
+        <!--android:key="etpFieldCellsInHeight"-->
+        <!--android:numeric="integer"-->
+        <!--android:maxLength="2"-->
+        <!--android:defaultValue="10"-->
+        <!--android:title="@string/field_cells_in_height"-->
+        <!--android:summary="10"/>-->
+    <!--<EditTextPreference-->
+        <!--android:key="etpFieldCellsInWidth"-->
+        <!--android:numeric="integer"-->
+        <!--android:maxLength="2"-->
+        <!--android:defaultValue="15"-->
+        <!--android:title="@string/field_cells_in_width"-->
+        <!--android:summary="15"/>-->
+
+    <PreferenceCategory
+        android:title="@string/thinking_time_title"/>
+    <EditTextPreference
+        android:key="etpThinkingTime"
+        android:title="@string/game_timer"
+        android:inputType="numberSigned"
+        android:maxLines="1"/>
+
+</PreferenceScreen>

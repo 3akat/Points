@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="colors_for_points">
+        <item>Черный</item>
+        <item>Красный</item>
+        <item>Синий</item>
+        <item>Зеленый</item>
+        <item>Желтый</item>
+    </string-array>
+
+    <string-array name="colors_for_points_val">
+        <item>black</item>
+        <item>red</item>
+        <item>blue</item>
+        <item>green</item>
+        <item>yellow</item>
+    </string-array>
+
+    <string-array name="colors_for_lines">
+        <item>Голубой</item>
+        <item>Светло-фиолетовый</item>
+    </string-array>
+
+    <string-array name="colors_for_lines_val">
+        <item>light_blue</item>
+        <item>light_purple</item>
+    </string-array>
+</resources>

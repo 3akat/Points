@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Точки</string>
+
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+
+    <!--menu-->
+    <string name="resume">Продолжить</string>
+    <string name="new_game">Новая игра</string>
+    <string name="save">Сохранить</string>
+    <string name="load">Загрузить</string>
+    <string name="settings">Настройки</string>
+    <string name="exit">Выход</string>
+    <string name="new_game_warring">Начать новую игру?</string>
+    <string name="exit_game_warring">Вы уврены что хотите выйти?</string>
+
+    <!--game_save_dialog-->
+    <string name="save_name">Имя сохранения</string>
+
+    <!--game-->
+    <string name="game_name">Точки</string>
+    <string name="ver">Версия</string>
+
+    <!--settings-->
+    <string name="players_settings">Настройки игроков</string>
+    <string name="extra_settings">Дополнительные настройки</string>
+    <string name="first_player_name">Имя первого игрока</string>
+    <string name="second_player_name">Имя второго игрока</string>
+    <string name="double_click_title">Дополнительний клик, для фиксации позиции точки.</string>
+    <string name="extra_move_title">Дополнительний ход после захвата территории.</string>
+    <string name="point_color_title">Цветовые настройки</string>
+    <string name="point_color_first_title">Цвет точки первого игрока</string>
+    <string name="point_color_second_title">Цвет точки второго игрока</string>
+    <string name="field_lines_color_title">Цвет разметки поля</string>
+    <string name="play_with_android">Игра против андроида</string>
+    <string name="thinking_time_title">Время на ход</string>
+    <string name="game_timer">Продолжительность игры</string>
+    <string name="point_color_first_default">blue</string>
+    <string name="point_color_second_default">black</string>
+    <string name="field_lines_color_default">light_blue</string>
+    <string name="minutes">мин.</string>
+    <string name="same_names">Вы не можете использовать одинаковые имена</string>
+    <string name="same_colors">Вы не можете использовать одинаковые цвета</string>
+    <string name="pick_field_size_title">Размер игрового поля</string>
+    <string name="field_cells_in_height">Клеток по вертикали</string>
+    <string name="field_cells_in_width">Клеток по горизонтали</string>
+    <string name="cells">кл.</string>
+
+    <!--colors for summaries-->
+    <string name="color_white">Белый</string>
+    <string name="color_black">Черный</string>
+    <string name="color_green">Зеленый</string>
+    <string name="color_red">Красный</string>
+    <string name="color_yellow">Желтый</string>
+    <string name="color_blue">Синий</string>
+    <string name="color_gray">Серый</string>
+    <string name="color_light_blue">Голубой</string>
+    <string name="color_light_purple">Светло-фиолетовый</string>
+
+</resources>

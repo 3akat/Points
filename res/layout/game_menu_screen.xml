@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/game_name"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dp"/>
+
+        <Button
+            style="@style/menu_btn_style"
+            android:text="@string/resume"
+            android:id="@+id/btnResume"
+            android:layout_marginTop="25dp"
+            android:layout_below="@id/tvAppName"/>
+
+        <Button
+            style="@style/menu_btn_style"
+            android:text="@string/new_game"
+            android:id="@+id/btnNewGame"
+            android:layout_alignTop="@id/btnResume"
+            android:layout_marginTop="45dp"
+            />
+
+        <Button
+            style="@style/menu_btn_style"
+            android:text="@string/save"
+            android:id="@+id/btnSave"
+            android:layout_below="@id/btnNewGame"/>
+
+        <Button
+            style="@style/menu_btn_style"
+            android:text="@string/load"
+            android:id="@+id/btnLoad"
+            android:layout_below="@id/btnSave"/>
+
+        <Button
+            style="@style/menu_btn_style"
+            android:text="@string/settings"
+            android:id="@+id/btnSettings"
+            android:layout_below="@id/btnLoad"/>
+
+        <Button
+            style="@style/menu_btn_style"
+            android:text="@string/exit"
+            android:id="@+id/btnExit"
+            android:layout_below="@id/btnSettings"/>
+
+    </RelativeLayout>
+</ScrollView>
