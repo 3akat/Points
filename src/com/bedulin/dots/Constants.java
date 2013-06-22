@@ -1,9 +1,13 @@
-package com.bedulin.dots.ui.constants;
+package com.bedulin.dots;
 
 /**
  * @author Alexandr Bedulin
  */
-public class MenuAndPrefsConstants {
+public class Constants {
+
+    public static final int CELLS_IN_HEIGHT = 30;
+    public static final int CELLS_IN_WIDTH = 30;
+
 
     public static final String PREFERENCE_HEADER = "header";
     public static final String PREFERENCE_FIRST_PLAYER_NAME = "etpFirstPlayerName";
@@ -15,10 +19,6 @@ public class MenuAndPrefsConstants {
     public static final String PREFERENCE_SECOND_CLICK = "cbpSecondClick";
     public static final String PREFERENCE_THINKING_TIME = "etpThinkingTime";
     public static final String PREFERENCE_EXTRA_MOVE = "cbpExtraMove";
-    //            TODO cells
-//    public static final String PREFERENCE_FIELD_CELLS_IN_HEIGHT = "etpFieldCellsInHeight";
-//    public static final String PREFERENCE_FIELD_CELLS_IN_WIDTH = "etpFieldCellsInWidth";
-
 
     public static final String MENU_MODE = "menu_mode";
     public static final int MENU_MODE_CHECK = -1;
@@ -36,5 +36,3 @@ public class MenuAndPrefsConstants {
 
     public static final String SPACE = " ";
 }
-
-

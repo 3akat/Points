@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import com.bedulin.dots.R;
-import com.bedulin.dots.ui.constants.MenuAndPrefsConstants;
+
+import static com.bedulin.dots.Constants.MENU_MODE;
+import static com.bedulin.dots.Constants.MENU_MODE_PAUSE;
 
 /**
  * @author Alexandr Bedulin
@@ -52,7 +54,7 @@ public class GameFieldActivity extends Activity {
     // ===========================================================
     private void showPauseMenu(){
         Intent intent = new Intent(this,MenuActivity.class);
-        intent.putExtra(MenuAndPrefsConstants.MENU_MODE, MenuAndPrefsConstants.MENU_MODE_PAUSE);
+        intent.putExtra(MENU_MODE, MENU_MODE_PAUSE);
         startActivity(intent);
     }
 

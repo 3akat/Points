@@ -7,14 +7,20 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import com.bedulin.dots.Constants;
 import com.bedulin.dots.R;
-import com.bedulin.dots.ui.constants.GameConstants;
+
+import java.util.ArrayList;
+
+import static com.bedulin.dots.Constants.CELLS_IN_HEIGHT;
+import static com.bedulin.dots.Constants.CELLS_IN_WIDTH;
 
 /**
  * @author Alexandr Bedulin
@@ -23,36 +29,56 @@ public class GameFieldView extends View {
     // ===========================================================
     // Constants
     // ===========================================================
-    public static final String LOG = "T_" + GameFieldView.class.getName();
-    public final int POINT_RADIUS;
+    private static final String LOG = GameFieldView.class.getSimpleName();
+
     public final int SCREEN_WIDTH;
+
     public final int SCREEN_HEIGHT;
 
     // ===========================================================
     // Fields
     // ===========================================================
     private Bitmap mBitmap;
-    private Canvas mCanvas;
-    private Paint mPaint, mBitmapPaint;
+
+    private Paint mPaint;
+
+    private Paint mBitmapPaint;
+
     private SharedPreferences mSharedPreference;
+
+    private float mCellSize;
+
+    private float mPointRadius;
+
+    private float mShiftX;
+
+    private float mShiftY;
+
+    private Canvas mCanvas;
+
+    private ArrayList<PointF> mPointPlayerOne;
+
+    private ArrayList<PointF> mPointPlayerTwo;
 
     // ===========================================================
     // Constructors
     // ===========================================================
     public GameFieldView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         DisplayMetrics dm = new DisplayMetrics();
-        ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
         SCREEN_WIDTH = dm.widthPixels;
         SCREEN_HEIGHT = dm.heightPixels;
-        Log.d(LOG, "H:" + dm.heightPixels + " W:" + SCREEN_WIDTH);
+        Log.d(LOG, "H:" + SCREEN_HEIGHT + " W:" + SCREEN_WIDTH);
+
+        mCellSize = Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) / Math.max(Constants.CELLS_IN_HEIGHT, CELLS_IN_WIDTH);
+        mPointRadius = mCellSize / 7;
+
+        mShiftX = (SCREEN_WIDTH - CELLS_IN_WIDTH * mCellSize) / 2;
+        mShiftY = (SCREEN_HEIGHT - CELLS_IN_HEIGHT * mCellSize) / 2;
 
         mBitmap = Bitmap.createBitmap(SCREEN_WIDTH, SCREEN_HEIGHT, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
-
-        //определяем параметры кисти, которой будем рисовать сетку и атомы
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
@@ -62,26 +88,8 @@ public class GameFieldView extends View {
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
-        mSharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
-        //            TODO cells
-//        final int CELLS_IN_H = Integer.parseInt(mSharedPreference.getString(MenuAndPrefsConstants.PREFERENCE_FIELD_CELLS_IN_HEIGHT, "2"));
-//        final int CELLS_IN_W = Integer.parseInt(mSharedPreference.getString(MenuAndPrefsConstants.PREFERENCE_FIELD_CELLS_IN_WIDTH, "1"));
-
-        Log.d(LOG, "cells_in_h: " + GameConstants.CELLS_IN_HEIGHT + "cells_in_w: " + GameConstants.CELLS_IN_WIDTH);
-
-        final int CELL_SIZE = Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) / Math.max(GameConstants.CELLS_IN_HEIGHT, GameConstants.CELLS_IN_WIDTH);
-        for (int x = 0; x < GameConstants.CELLS_IN_WIDTH + 1; x++)
-            mCanvas.drawLine(
-                    (float) x * CELL_SIZE, 0,
-                    (float) x * CELL_SIZE, SCREEN_HEIGHT,
-                    mPaint);
-        for (int y = 0; y < GameConstants.CELLS_IN_WIDTH + 1; y++)
-            mCanvas.drawLine(
-                    0, (float) y * CELL_SIZE,
-                    SCREEN_WIDTH, (float) y * CELL_SIZE,
-                    mPaint);
-
-        POINT_RADIUS = CELL_SIZE / 7;
+        mPointPlayerOne = new ArrayList<>();
+        mPointPlayerTwo = new ArrayList<>();
     }
 
     // ===========================================================
@@ -93,17 +101,52 @@ public class GameFieldView extends View {
     // ===========================================================
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+        mCanvas = canvas;
+        mCanvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+
+        mSharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
+        for (int x = 0; x < CELLS_IN_WIDTH + 1; x++)
+            mCanvas.drawLine(
+                    (float) x * mCellSize + mShiftX, 0,
+                    (float) x * mCellSize + mShiftX, SCREEN_HEIGHT,
+                    mPaint);
+        for (int y = 0; y < CELLS_IN_WIDTH + 1; y++)
+            mCanvas.drawLine(
+                    0, (float) y * mCellSize + mShiftY,
+                    SCREEN_WIDTH, (float) y * mCellSize + mShiftY,
+                    mPaint);
+
+        mCanvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+
+        mPaint.setStyle(Paint.Style.FILL);
+        int length = mPointPlayerOne.size();
+        for (int i = 0; i < length; i++) {
+            float x = mPointPlayerOne.get(i).x;
+            float y = mPointPlayerOne.get(i).y;
+            mCanvas.drawCircle(x, y, mPointRadius, mPaint);
+//            mPaint.setStyle(Paint.Style.STROKE);
+//            mCanvas.drawCircle(x, y, mPointRadius * 3, mPaint);
+        }
+
+        length = mPointPlayerTwo.size();
+        for (int i = 0; i < length; i++) {
+            float x = mPointPlayerOne.get(i).x;
+            float y = mPointPlayerOne.get(i).y;
+            mCanvas.drawCircle(x, y, mPointRadius, mPaint);
+        }
+
+
+        //drawing shadows
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-            final float X = event.getX();
-            final float Y = event.getY();
-            mPaint.setStyle(Paint.Style.FILL);
-            mCanvas.drawCircle(X, Y, POINT_RADIUS, mPaint);
-            mPaint.setStyle(Paint.Style.STROKE);
-            mCanvas.drawCircle(X, Y, POINT_RADIUS * 3, mPaint);
+        Log.e(LOG, event.getAction() + "");
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+            invalidate();
+        }
         return super.onTouchEvent(event);
     }
 

@@ -6,7 +6,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.bedulin.dots.R;
 
-import static com.bedulin.dots.ui.constants.MenuAndPrefsConstants.*;
+import static com.bedulin.dots.Constants.*;
 
 /**
  * @author Alexandr Bedulin
@@ -15,7 +15,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     // ===========================================================
     // Constants
     // ===========================================================
-    private static final String LOG = "T_" + SettingsActivity.class.getName();
+    private static final String LOG = SettingsActivity.class.getSimpleName();
 
     // ===========================================================
     // Fields
@@ -137,13 +137,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                 boolean enabled = Boolean.getBoolean(newValue.toString());
                 etpThinkingTime.setEnabled(!enabled);
                 break;
-//            TODO cells
-//            case PREFERENCE_FIELD_CELLS_IN_HEIGHT:
-//                etpFieldCellsInHeight.setSummary(newValue.toString()+SPACE+getString(R.string.cells));
-//                break;
-//            case PREFERENCE_FIELD_CELLS_IN_WIDTH:
-//                etpFieldCellsInWidth.setSummary(newValue.toString()+SPACE+getString(R.string.cells));
-//                break;
         }
         return true;
     }
@@ -161,9 +154,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         etpFirstPlayerName = (EditTextPreference) findPreference(PREFERENCE_FIRST_PLAYER_NAME);
         etpSecondPlayerName = (EditTextPreference) findPreference(PREFERENCE_SECOND_PLAYER_NAME);
         etpThinkingTime = (EditTextPreference) findPreference(PREFERENCE_THINKING_TIME);
-        //            TODO cells
-//        etpFieldCellsInHeight = (EditTextPreference) findPreference(PREFERENCE_FIELD_CELLS_IN_HEIGHT);
-//        etpFieldCellsInWidth = (EditTextPreference) findPreference(PREFERENCE_FIELD_CELLS_IN_WIDTH);
         cbpSecondClick = (CheckBoxPreference) findPreference(PREFERENCE_SECOND_CLICK);
         cbpPlayWithAndroid = (CheckBoxPreference) findPreference(PREFERENCE_PLAY_WITH_ANDROID);
         lpFirstPlayerColor = (ListPreference) findPreference(PREFERENCE_FIRST_PLAYER_COLOR);
@@ -175,9 +165,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         etpFirstPlayerName.setOnPreferenceChangeListener(this);
         etpSecondPlayerName.setOnPreferenceChangeListener(this);
         etpThinkingTime.setOnPreferenceChangeListener(this);
-        //            TODO cells
-//        etpFieldCellsInHeight.setOnPreferenceChangeListener(this);
-//        etpFieldCellsInWidth.setOnPreferenceChangeListener(this);
         cbpSecondClick.setOnPreferenceChangeListener(this);
         cbpPlayWithAndroid.setOnPreferenceChangeListener(this);
         lpFirstPlayerColor.setOnPreferenceChangeListener(this);
@@ -186,15 +173,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     }
 
     private void initPreference() {
-        //            TODO cells
-//        String temp = etpFieldCellsInHeight.getText();
-//        if (temp!=null && !temp.equals("")) {
-//            etpFieldCellsInHeight.setSummary(temp +SPACE+ getString(R.string.cells));
-//        }
-//        temp = etpFieldCellsInWidth.getText();
-//        if (temp!=null && !temp.equals("")) {
-//            etpFieldCellsInWidth.setSummary(temp +SPACE+ getString(R.string.cells));
-//        }
         String temp  = etpThinkingTime.getText();
         if (temp!=null && !temp.equals("")) {
             etpThinkingTime.setSummary(temp +SPACE+ getString(R.string.minutes));

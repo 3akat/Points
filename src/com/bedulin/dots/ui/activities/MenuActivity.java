@@ -11,7 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bedulin.dots.R;
-import com.bedulin.dots.ui.constants.MenuAndPrefsConstants;
+
+import static com.bedulin.dots.Constants.*;
 
 /**
  * @author Alexandr Bedulin
@@ -20,7 +21,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     // ===========================================================
     // Constants
     // ===========================================================
-    public static final String LOG = "T_GameMenuActivity";
+    public static final String LOG = MenuActivity.class.getSimpleName();
 
     // ===========================================================
     // Fields
@@ -55,9 +56,9 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         super.onResume();
         Intent intent = getIntent();
         if (intent == null) {
-            mMenuMode = MenuAndPrefsConstants.MENU_MODE_FIRST_START;
+            mMenuMode = MENU_MODE_FIRST_START;
         } else {
-            mMenuMode = intent.getIntExtra(MenuAndPrefsConstants.MENU_MODE, MenuAndPrefsConstants.MENU_MODE_CHECK);
+            mMenuMode = intent.getIntExtra(MENU_MODE, MENU_MODE_CHECK);
         }
         Log.d(LOG, "mMenuMode: " + mMenuMode);
     }
@@ -69,7 +70,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                 resumeLastGame();
                 break;
             case R.id.btnNewGame:
-                if (mMenuMode == MenuAndPrefsConstants.MENU_MODE_PAUSE) {
+                if (mMenuMode == MENU_MODE_PAUSE) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     dialog.setMessage(getString(R.string.new_game_warring));
                     dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
@@ -98,7 +99,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                 showSettings();
                 break;
             case R.id.btnExit:
-                if (mMenuMode == MenuAndPrefsConstants.MENU_MODE_PAUSE) {
+                if (mMenuMode == MENU_MODE_PAUSE) {
                     AlertDialog.Builder dialog = new AlertDialog.Builder(this);
                     dialog.setMessage(getString(R.string.exit_game_warring));
                     dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {

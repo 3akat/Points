@@ -20,6 +20,7 @@ public class LauncherActivity extends Activity implements Animation.AnimationLis
     // Fields
     // ===========================================================
     private ImageView ivLauncher;
+
     // ===========================================================
     // Constructors
     // ===========================================================
