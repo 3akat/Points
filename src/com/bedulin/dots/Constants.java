@@ -13,6 +13,8 @@ public class Constants {
     public static final String PREFERENCE_FIRST_PLAYER_NAME = "etpFirstPlayerName";
     public static final String PREFERENCE_SECOND_PLAYER_NAME = "etpSecondPlayerName";
     public static final String PREFERENCE_FIRST_PLAYER_COLOR = "lpFirstPlayerColor";
+    public static final String PREFERENCE_DEFAULT_FIRST_PLAYER_COLOR = "black";
+    public static final String PREFERENCE_DEFAULT_SECOND_PLAYER_COLOR = "blue";
     public static final String PREFERENCE_SECOND_PLAYER_COLOR = "lpSecondPlayerColor";
     public static final String PREFERENCE_FIELD_LINES_COLOR = "lpFieldLinesColor";
     public static final String PREFERENCE_PLAY_WITH_ANDROID = "cbpPlayWithAndroid";

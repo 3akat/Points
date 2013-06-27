@@ -11,16 +11,16 @@ import static com.bedulin.dots.Constants.*;
 /**
  * @author Alexandr Bedulin
  */
-public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
+public class PreferenceActivity extends android.preference.PreferenceActivity implements Preference.OnPreferenceChangeListener {
     // ===========================================================
     // Constants
     // ===========================================================
-    private static final String LOG = SettingsActivity.class.getSimpleName();
+    private static final String LOG = PreferenceActivity.class.getSimpleName();
 
     // ===========================================================
     // Fields
     // ===========================================================
-    private EditTextPreference etpFirstPlayerName, etpSecondPlayerName, etpThinkingTime, etpFieldCellsInWidth, etpFieldCellsInHeight;
+    private EditTextPreference etpFirstPlayerName, etpSecondPlayerName, etpThinkingTime;
     private CheckBoxPreference cbpSecondClick, cbpPlayWithAndroid;
     private ListPreference lpFirstPlayerColor, lpSecondPlayerColor, lpFieldLinesColor;
     private TextView tvVersion;

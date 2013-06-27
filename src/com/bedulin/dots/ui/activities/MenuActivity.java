@@ -170,7 +170,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     }
 
     private void showSettings() {
-        Intent intent = new Intent(this, SettingsActivity.class);
+        Intent intent = new Intent(this, PreferenceActivity.class);
         startActivity(intent);
     }
 

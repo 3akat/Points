@@ -21,6 +21,7 @@
     <!--game-->
     <string name="game_name">Точки</string>
     <string name="ver">Версия</string>
+    <string name="loading">Загрузка</string>
 
     <!--settings-->
     <string name="players_settings">Настройки игроков</string>
@@ -57,5 +58,10 @@
     <string name="color_gray">Серый</string>
     <string name="color_light_blue">Голубой</string>
     <string name="color_light_purple">Светло-фиолетовый</string>
+
+    <!--Game screen-->
+    <string name="sorry_this_is_max_scale">Максимальный размер достигнут</string>
+    <string name="sorry_this_is_min_scale">Мини\мальный размер достигнут</string>
+
 
 </resources>
