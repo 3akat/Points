@@ -1,60 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="25dp"
+        android:text="@string/game_name"
+        android:textSize="20sp"/>
 
-        <TextView
-            android:id="@+id/tvAppName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/game_name"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="10dp"/>
+    <Button
+        style="@style/menu_btn_style"
+        android:id="@+id/btnResume"
+        android:text="@string/resume"/>
 
-        <Button
-            style="@style/menu_btn_style"
-            android:text="@string/resume"
-            android:id="@+id/btnResume"
-            android:layout_marginTop="25dp"
-            android:layout_below="@id/tvAppName"/>
+    <Button
+        android:id="@+id/btnNewGame"
+        style="@style/menu_btn_style"
+        android:text="@string/new_game"/>
 
-        <Button
-            style="@style/menu_btn_style"
-            android:text="@string/new_game"
-            android:id="@+id/btnNewGame"
-            android:layout_alignTop="@id/btnResume"
-            android:layout_marginTop="45dp"
-            />
+    <Button
+        android:id="@+id/btnSave"
+        style="@style/menu_btn_style"
+        android:text="@string/save"/>
 
-        <Button
-            style="@style/menu_btn_style"
-            android:text="@string/save"
-            android:id="@+id/btnSave"
-            android:layout_below="@id/btnNewGame"/>
+    <Button
+        android:id="@+id/btnLoad"
+        style="@style/menu_btn_style"
+        android:text="@string/load"/>
 
-        <Button
-            style="@style/menu_btn_style"
-            android:text="@string/load"
-            android:id="@+id/btnLoad"
-            android:layout_below="@id/btnSave"/>
+    <Button
+        android:id="@+id/btnSettings"
+        style="@style/menu_btn_style"
+        android:text="@string/settings"/>
 
-        <Button
-            style="@style/menu_btn_style"
-            android:text="@string/settings"
-            android:id="@+id/btnSettings"
-            android:layout_below="@id/btnLoad"/>
-
-        <Button
-            style="@style/menu_btn_style"
-            android:text="@string/exit"
-            android:id="@+id/btnExit"
-            android:layout_below="@id/btnSettings"/>
-
-    </RelativeLayout>
-</ScrollView>
+    <Button
+        android:id="@+id/btnExit"
+        style="@style/menu_btn_style"
+        android:text="@string/exit"/>
+</LinearLayout>
