@@ -186,28 +186,33 @@ public class GameFieldView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mScaleGestureDirector.onTouchEvent(event);
-        if (!mScaleGestureDirector.isInProgress())
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                float x = event.getX();
-                float y = event.getY();
-                PointF pointF = findNearestPoint(x, y);
-                switch (mNextMove) {
-                    case PLAYER_ONE_MOVE:
-                        if (!mPlayerTwoMoves.contains(pointF)) {
-                            mPlayerOneMoves.add(pointF);
-                            mNextMove = PLAYER_TWO_MOVE;
-                        }
-                        break;
-                    case PLAYER_TWO_MOVE:
-                        if (!mPlayerOneMoves.contains(pointF)) {
-                            mPlayerTwoMoves.add(pointF);
-                            mNextMove = PLAYER_ONE_MOVE;
-                        }
-                        break;
+        if (!mScaleGestureDirector.isInProgress()) {
+            float x = event.getX();
+            float y = event.getY();
+            if (x > mShiftX &&
+                    y > mShiftY &&
+                    x < mShiftX + CELLS_IN_WIDTH * mCellSize &&
+                    y < mShiftY + CELLS_IN_HEIGHT * mCellSize)
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    PointF pointF = findNearestPoint(x, y);
+                    switch (mNextMove) {
+                        case PLAYER_ONE_MOVE:
+                            if (!mPlayerTwoMoves.contains(pointF)) {
+                                mPlayerOneMoves.add(pointF);
+                                mNextMove = PLAYER_TWO_MOVE;
+                            }
+                            break;
+                        case PLAYER_TWO_MOVE:
+                            if (!mPlayerOneMoves.contains(pointF)) {
+                                mPlayerTwoMoves.add(pointF);
+                                mNextMove = PLAYER_ONE_MOVE;
+                            }
+                            break;
+                    }
+                    invalidate();
+                    return true;
                 }
-                invalidate();
-                return true;
-            }
+        }
         return super.onTouchEvent(event);
     }
 
