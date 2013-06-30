@@ -64,6 +64,8 @@ public class GameFieldView extends View {
     private ArrayList<PointF> mPossibleMoves;
     private ArrayList<PointF> mPlayerOneMoves;
     private ArrayList<PointF> mPlayerTwoMoves;
+    private PointF mPlayerOneTempPoint;
+    private PointF mPlayerTwoTempPoint;
 
     private int mNextMove;
 
@@ -73,6 +75,8 @@ public class GameFieldView extends View {
     private ScaleGestureDetector.SimpleOnScaleGestureListener mScaleListener;
 
     private SharedPreferences mSharedPreference;
+
+    private boolean isApprovingMoveNeed;
 
     // ===========================================================
     // Constructors
@@ -133,6 +137,7 @@ public class GameFieldView extends View {
 
         mScaleGestureDirector = new ScaleGestureDetector(context, mScaleListener);
 
+        isApprovingMoveNeed = mSharedPreference.getBoolean(Constants.PREFERENCE_IS_APPROVING_MOVE_NEED, true);
     }
 
     // ===========================================================
@@ -161,17 +166,27 @@ public class GameFieldView extends View {
 
         canvas.drawBitmap(mBitmap, 0, 0, mPaint);
 
+        //drawing player one points
         mPaint.setStyle(Paint.Style.FILL);
-
         mPaint.setColor(PLAYER_ONE_COLOR);
         int length = mPlayerOneMoves.size();
         for (int i = 0; i < length; i++) {
             float x = mPlayerOneMoves.get(i).x;
             float y = mPlayerOneMoves.get(i).y;
             canvas.drawCircle(x, y, mPointRadius, mPaint);
-//            mPaint.setStyle(Paint.Style.STROKE);
-//            mCanvas.drawCircle(x, y, mPointRadius * 3, mPaint);
         }
+
+        //drawing player one temp point
+        if (mPlayerOneTempPoint != null) {
+            float x = mPlayerOneTempPoint.x;
+            float y = mPlayerOneTempPoint.y;
+            canvas.drawCircle(x, y, mPointRadius, mPaint);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mCanvas.drawCircle(x, y, mPointRadius * 3, mPaint);
+        }
+
+        //drawing player two points
+        mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(PLAYER_TWO_COLOR);
         length = mPlayerTwoMoves.size();
         for (int i = 0; i < length; i++) {
@@ -180,32 +195,61 @@ public class GameFieldView extends View {
             canvas.drawCircle(x, y, mPointRadius, mPaint);
         }
 
+        //drawing player two temp point
+        if (mPlayerTwoTempPoint != null) {
+            float x = mPlayerTwoTempPoint.x;
+            float y = mPlayerTwoTempPoint.y;
+            canvas.drawCircle(x, y, mPointRadius, mPaint);
+            mPaint.setStyle(Paint.Style.STROKE);
+            mCanvas.drawCircle(x, y, mPointRadius * 3, mPaint);
+        }
+
         mCanvas = canvas;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mScaleGestureDirector.onTouchEvent(event);
-        if (!mScaleGestureDirector.isInProgress()) {
+        if (!mScaleGestureDirector.isInProgress()) {  // if not scaling
             float x = event.getX();
             float y = event.getY();
             if (x > mShiftX &&
                     y > mShiftY &&
                     x < mShiftX + CELLS_IN_WIDTH * mCellSize &&
-                    y < mShiftY + CELLS_IN_HEIGHT * mCellSize)
+                    y < mShiftY + CELLS_IN_HEIGHT * mCellSize)     //checking cells field borders
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     PointF pointF = findNearestPoint(x, y);
                     switch (mNextMove) {
                         case PLAYER_ONE_MOVE:
-                            if (!mPlayerTwoMoves.contains(pointF)) {
-                                mPlayerOneMoves.add(pointF);
-                                mNextMove = PLAYER_TWO_MOVE;
+                            if (!mPlayerTwoMoves.contains(pointF)) {// there is no other player point in this place
+                                if (isApprovingMoveNeed)
+                                    if (pointF.equals(mPlayerOneTempPoint)) {
+                                        mPlayerOneMoves.add(pointF);
+                                        mPlayerOneTempPoint = null;
+                                        mNextMove = PLAYER_TWO_MOVE;
+                                    } else {
+                                        mPlayerOneTempPoint = pointF;
+                                    }
+                                else {
+                                    mPlayerOneMoves.add(pointF);
+                                    mNextMove = PLAYER_TWO_MOVE;
+                                }
                             }
                             break;
                         case PLAYER_TWO_MOVE:
-                            if (!mPlayerOneMoves.contains(pointF)) {
-                                mPlayerTwoMoves.add(pointF);
-                                mNextMove = PLAYER_ONE_MOVE;
+                            if (!mPlayerOneMoves.contains(pointF)) {// there is no other player point in this place
+                                if (isApprovingMoveNeed)
+                                    if (pointF.equals(mPlayerTwoTempPoint)) {
+                                        mPlayerTwoMoves.add(pointF);
+                                        mPlayerTwoTempPoint = null;
+                                        mNextMove = PLAYER_ONE_MOVE;
+                                    } else {
+                                        mPlayerTwoTempPoint = pointF;
+                                    }
+                                else {
+                                    mPlayerTwoMoves.add(pointF);
+                                    mNextMove = PLAYER_ONE_MOVE;
+                                }
                             }
                             break;
                     }

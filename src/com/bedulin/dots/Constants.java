@@ -18,7 +18,7 @@ public class Constants {
     public static final String PREFERENCE_SECOND_PLAYER_COLOR = "lpSecondPlayerColor";
     public static final String PREFERENCE_FIELD_LINES_COLOR = "lpFieldLinesColor";
     public static final String PREFERENCE_PLAY_WITH_ANDROID = "cbpPlayWithAndroid";
-    public static final String PREFERENCE_SECOND_CLICK = "cbpSecondClick";
+    public static final String PREFERENCE_IS_APPROVING_MOVE_NEED = "cbpSecondClick";
     public static final String PREFERENCE_THINKING_TIME = "etpThinkingTime";
     public static final String PREFERENCE_EXTRA_MOVE = "cbpExtraMove";
 

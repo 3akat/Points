@@ -21,7 +21,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
     // Fields
     // ===========================================================
     private EditTextPreference etpFirstPlayerName, etpSecondPlayerName, etpThinkingTime;
-    private CheckBoxPreference cbpSecondClick, cbpPlayWithAndroid;
+    private CheckBoxPreference cbpApprovingMove, cbpPlayWithAndroid;
     private ListPreference lpFirstPlayerColor, lpSecondPlayerColor, lpFieldLinesColor;
     private TextView tvVersion;
 
@@ -154,7 +154,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
         etpFirstPlayerName = (EditTextPreference) findPreference(PREFERENCE_FIRST_PLAYER_NAME);
         etpSecondPlayerName = (EditTextPreference) findPreference(PREFERENCE_SECOND_PLAYER_NAME);
         etpThinkingTime = (EditTextPreference) findPreference(PREFERENCE_THINKING_TIME);
-        cbpSecondClick = (CheckBoxPreference) findPreference(PREFERENCE_SECOND_CLICK);
+        cbpApprovingMove = (CheckBoxPreference) findPreference(PREFERENCE_IS_APPROVING_MOVE_NEED);
         cbpPlayWithAndroid = (CheckBoxPreference) findPreference(PREFERENCE_PLAY_WITH_ANDROID);
         lpFirstPlayerColor = (ListPreference) findPreference(PREFERENCE_FIRST_PLAYER_COLOR);
         lpSecondPlayerColor = (ListPreference) findPreference(PREFERENCE_SECOND_PLAYER_COLOR);
@@ -165,7 +165,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
         etpFirstPlayerName.setOnPreferenceChangeListener(this);
         etpSecondPlayerName.setOnPreferenceChangeListener(this);
         etpThinkingTime.setOnPreferenceChangeListener(this);
-        cbpSecondClick.setOnPreferenceChangeListener(this);
+        cbpApprovingMove.setOnPreferenceChangeListener(this);
         cbpPlayWithAndroid.setOnPreferenceChangeListener(this);
         lpFirstPlayerColor.setOnPreferenceChangeListener(this);
         lpSecondPlayerColor.setOnPreferenceChangeListener(this);
