@@ -18,6 +18,8 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import com.bedulin.dots.Constants;
 import com.bedulin.dots.R;
+import com.bedulin.dots.temp.JPS;
+import com.bedulin.dots.temp.Node;
 
 import java.util.ArrayList;
 
@@ -61,9 +63,9 @@ public class GameFieldView extends View {
     private float mShiftX;
     private float mShiftY;
 
-    private ArrayList<PointF> mPossibleMoves;
-    private ArrayList<PointF> mPlayerOneMoves;
-    private ArrayList<PointF> mPlayerTwoMoves;
+    private Node[][] mPossibleMoves;
+    private ArrayList<Node> mPlayerOneMoves;
+    private ArrayList<Node> mPlayerTwoMoves;
     private PointF mPlayerOneTempPoint;
     private PointF mPlayerTwoTempPoint;
 
@@ -119,7 +121,7 @@ public class GameFieldView extends View {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
 
-        mPossibleMoves = new ArrayList<>((CELLS_IN_HEIGHT + 1) * (CELLS_IN_WIDTH + 1));
+        mPossibleMoves = new Node[(CELLS_IN_HEIGHT + 1)][(CELLS_IN_WIDTH + 1)];
         findPossibleMoves();
         mPlayerOneMoves = new ArrayList<>();
         mPlayerTwoMoves = new ArrayList<>();
@@ -171,8 +173,8 @@ public class GameFieldView extends View {
         mPaint.setColor(PLAYER_ONE_COLOR);
         int length = mPlayerOneMoves.size();
         for (int i = 0; i < length; i++) {
-            float x = mPlayerOneMoves.get(i).x;
-            float y = mPlayerOneMoves.get(i).y;
+            float x = mPlayerOneMoves.get(i).getX();
+            float y = mPlayerOneMoves.get(i).getY();
             canvas.drawCircle(x, y, mPointRadius, mPaint);
         }
 
@@ -190,8 +192,8 @@ public class GameFieldView extends View {
         mPaint.setColor(PLAYER_TWO_COLOR);
         length = mPlayerTwoMoves.size();
         for (int i = 0; i < length; i++) {
-            float x = mPlayerTwoMoves.get(i).x;
-            float y = mPlayerTwoMoves.get(i).y;
+            float x = mPlayerTwoMoves.get(i).getX();
+            float y = mPlayerTwoMoves.get(i).getY();
             canvas.drawCircle(x, y, mPointRadius, mPaint);
         }
 
@@ -211,6 +213,37 @@ public class GameFieldView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         mScaleGestureDirector.onTouchEvent(event);
         if (!mScaleGestureDirector.isInProgress()) {  // if not scaling
+
+            //trying to find path
+            if (mPlayerOneMoves.size() > 3 || mPlayerTwoMoves.size() > 3) {
+                float xMax = CELLS_IN_WIDTH * mCellSize + mShiftX;  //size of grid x direction
+                float yMax = CELLS_IN_HEIGHT * mCellSize + mShiftY;  //size of the grid y direction
+                float xIsland = 0; //islands along the x direction
+                float yIsland = 0; //islands along the y direction
+                Node startPoint = null;
+                Node endPoint = null;
+                if (mPlayerOneMoves.size() > 3 && mPlayerTwoMoves.size() > 3) {
+                    switch (mNextMove) {
+                        case PLAYER_ONE_MOVE:
+                            startPoint = mPlayerOneMoves.get(0);
+                            endPoint = mPlayerOneMoves.get(3);
+                            break;
+                        case PLAYER_TWO_MOVE:
+                            startPoint = mPlayerTwoMoves.get(0);
+                            endPoint = mPlayerTwoMoves.get(3);
+                            break;
+                    }
+                } else if (mPlayerOneMoves.size() > 3) {
+                    startPoint = mPlayerOneMoves.get(0);
+                    endPoint = mPlayerOneMoves.get(3);
+                } else if (mPlayerOneMoves.size() > 3) {
+                    startPoint = mPlayerTwoMoves.get(0);
+                    endPoint = mPlayerTwoMoves.get(3);
+                }
+
+                JPS jpsg = new JPS(xMax, yMax, xIsland, yIsland, mPossibleMoves, mCellSize, mShiftX, mShiftY, startPoint, endPoint);
+                boolean thereIsPath = jpsg.search();
+            }
             float x = event.getX();
             float y = event.getY();
             if (x > mShiftX &&
@@ -218,36 +251,36 @@ public class GameFieldView extends View {
                     x < mShiftX + CELLS_IN_WIDTH * mCellSize &&
                     y < mShiftY + CELLS_IN_HEIGHT * mCellSize)     //checking cells field borders
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    PointF pointF = findNearestPoint(x, y);
+                    Node node = findNearestPoint(x, y);
                     switch (mNextMove) {
                         case PLAYER_ONE_MOVE:
-                            if (!mPlayerTwoMoves.contains(pointF)) {// there is no other player point in this place
+                            if (!mPlayerTwoMoves.contains(node)) {// there is no other player point in this place
                                 if (isApprovingMoveNeed)
-                                    if (pointF.equals(mPlayerOneTempPoint)) {
-                                        mPlayerOneMoves.add(pointF);
+                                    if (node.equals(mPlayerOneTempPoint)) {
+                                        mPlayerOneMoves.add(node);
                                         mPlayerOneTempPoint = null;
                                         mNextMove = PLAYER_TWO_MOVE;
                                     } else {
-                                        mPlayerOneTempPoint = pointF;
+                                        mPlayerOneTempPoint = node;
                                     }
                                 else {
-                                    mPlayerOneMoves.add(pointF);
+                                    mPlayerOneMoves.add(node);
                                     mNextMove = PLAYER_TWO_MOVE;
                                 }
                             }
                             break;
                         case PLAYER_TWO_MOVE:
-                            if (!mPlayerOneMoves.contains(pointF)) {// there is no other player point in this place
+                            if (!mPlayerOneMoves.contains(node)) {// there is no other player point in this place
                                 if (isApprovingMoveNeed)
-                                    if (pointF.equals(mPlayerTwoTempPoint)) {
-                                        mPlayerTwoMoves.add(pointF);
+                                    if (node.equals(mPlayerTwoTempPoint)) {
+                                        mPlayerTwoMoves.add(node);
                                         mPlayerTwoTempPoint = null;
                                         mNextMove = PLAYER_ONE_MOVE;
                                     } else {
-                                        mPlayerTwoTempPoint = pointF;
+                                        mPlayerTwoTempPoint = node;
                                     }
                                 else {
-                                    mPlayerTwoMoves.add(pointF);
+                                    mPlayerTwoMoves.add(node);
                                     mNextMove = PLAYER_ONE_MOVE;
                                 }
                             }
@@ -299,20 +332,18 @@ public class GameFieldView extends View {
             public void run() {
                 for (int i = 0; i < CELLS_IN_HEIGHT + 1; i++)
                     for (int j = 0; j < CELLS_IN_WIDTH + 1; j++) {
-                        mPossibleMoves.add(new PointF((float) j * mCellSize + mShiftX, (float) i * mCellSize + mShiftY));
+                        mPossibleMoves[j][i] = new Node((float) j * mCellSize + mShiftX, (float) i * mCellSize + mShiftY);
                     }
                 mProgressDialog.dismiss();
             }
         }).start();
     }
 
-    private PointF findNearestPoint(float x, float y) {
+    private Node findNearestPoint(float x, float y) {
         int posX = Math.round((x - mShiftX) / mCellSize);
         int posY = Math.round((y - mShiftY) / mCellSize);
 
-        int position = posY * POINT_IN_WIDTH + posX;
-
-        return mPossibleMoves.get(position);
+        return mPossibleMoves[posX][posY];
     }
 
     //переводим dp в пиксели
@@ -326,4 +357,5 @@ public class GameFieldView extends View {
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
+
 }
