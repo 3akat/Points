@@ -1,8 +1,10 @@
 package com.bedulin.dots.ui.activities;
 
 import android.os.Bundle;
-import android.preference.*;
-import android.widget.TextView;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.widget.Toast;
 import com.bedulin.dots.R;
 
@@ -23,7 +25,6 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
     private EditTextPreference etpFirstPlayerName, etpSecondPlayerName, etpThinkingTime;
     private CheckBoxPreference cbpApprovingMove, cbpPlayWithAndroid;
     private ListPreference lpFirstPlayerColor, lpSecondPlayerColor, lpFieldLinesColor;
-    private TextView tvVersion;
 
     // ===========================================================
     // Constructors
@@ -42,11 +43,6 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
         addPreferencesFromResource(R.xml.preference);
         findPreferences();
         setListeners();
-//        try {
-//            tvVersion.setText(getString(R.string.ver) + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-//        } catch (PackageManager.NameNotFoundException e) {
-//            Log.d(LOG, "tvVersion init: " + e.toString());
-//        }
     }
 
     @Override
