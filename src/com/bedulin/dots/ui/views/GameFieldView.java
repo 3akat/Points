@@ -29,7 +29,7 @@ public class GameFieldView extends View {
     // ===========================================================
     // Constants
     // ===========================================================
-    private static final String LOG = GameFieldView.class.getSimpleName();
+    private static final String LOG_TAG = GameFieldView.class.getSimpleName();
 
     private static final int PLAYER_ONE_MOVE = 1;
 
@@ -47,7 +47,7 @@ public class GameFieldView extends View {
 
     private final int PLAYER_TWO_COLOR;
 
-    private static final float MIN_ZOOM = 0.8f;
+    private static final float MIN_ZOOM = 1;
 
     private static final float MAX_ZOOM = 2;
 
@@ -63,9 +63,17 @@ public class GameFieldView extends View {
     private float mShiftX;
     private float mShiftY;
 
-    private float scaleFactor;
-    private float translateX;
-    private float translateY;
+    private float mScaleFactor;
+    private float mTranslateX;
+    private float mTranslateY;
+    private float mStartTranslateX;
+    private float mStartTranslateY;
+
+    private float mStartX;
+    private float mStartY;
+
+
+    private int mPrevAction;
 
     private Node[][] mPossibleMoves;
     private ArrayList<Node> mPlayerOneMoves;
@@ -100,7 +108,7 @@ public class GameFieldView extends View {
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
         SCREEN_WIDTH = dm.widthPixels;
         SCREEN_HEIGHT = dm.heightPixels;
-        Log.d(LOG, "H:" + SCREEN_HEIGHT + " W:" + SCREEN_WIDTH);
+        Log.d(LOG_TAG, "H:" + SCREEN_HEIGHT + " W:" + SCREEN_WIDTH);
 
         //init size for drawing (points, cells)
         mCellSize = Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) / Math.max(Constants.CELLS_IN_HEIGHT, CELLS_IN_WIDTH);
@@ -136,8 +144,8 @@ public class GameFieldView extends View {
         mScaleListener = new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                scaleFactor *= detector.getScaleFactor();
-                scaleFactor = Math.max(MIN_ZOOM, Math.min(scaleFactor, MAX_ZOOM));
+                mScaleFactor *= detector.getScaleFactor();
+                mScaleFactor = Math.max(MIN_ZOOM, Math.min(mScaleFactor, MAX_ZOOM));
                 invalidate();
                 return true;
             }
@@ -147,7 +155,7 @@ public class GameFieldView extends View {
 
         isApprovingMoveNeed = mSharedPreference.getBoolean(Constants.PREFERENCE_IS_APPROVING_MOVE_NEED, true);
 
-        scaleFactor = 1;
+        mScaleFactor = 1;
     }
 
     // ===========================================================
@@ -160,9 +168,10 @@ public class GameFieldView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save();
-        canvas.scale(scaleFactor, scaleFactor, canvas.getWidth() / 2, canvas.getHeight() / 2);
-
         canvas.drawBitmap(mBitmap, 0, 0, mPaint);
+        canvas.scale(mScaleFactor, mScaleFactor, canvas.getWidth() / 2, canvas.getHeight() / 2);
+        canvas.translate(mTranslateX / mScaleFactor, mTranslateY / mScaleFactor);
+
         mPaint.setColor(CELLS_COLOR);
 
         mSharedPreference = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -218,8 +227,6 @@ public class GameFieldView extends View {
         }
 
         mCanvas = canvas;
-
-        canvas.translate(translateX / scaleFactor, translateY / scaleFactor);
         canvas.restore();
     }
 
@@ -305,16 +312,24 @@ public class GameFieldView extends View {
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (event.getHistorySize() > 0) {
-                        translateX = event.getX() - event.getHistoricalX(event.getHistorySize() - 1);
-                        translateX = event.getY() - event.getHistoricalY(event.getHistorySize() - 1);
-                        invalidate();
+                    if (mPrevAction != MotionEvent.ACTION_MOVE) {
+                        mStartX = event.getX();
+                        mStartY = event.getY();
+                        mStartTranslateX = mTranslateX;
+                        mStartTranslateY = mTranslateY;
+                        mPrevAction = MotionEvent.ACTION_MOVE;
                     }
+                    mTranslateX = event.getX() - mStartX + mStartTranslateX;
+                    mTranslateY = event.getY() - mStartY + mStartTranslateY;
+                    invalidate();
                     break;
             }
+
+            if (mPrevAction == MotionEvent.ACTION_MOVE && event.getAction() != MotionEvent.ACTION_MOVE) {
+                mPrevAction = event.getAction();
+            }
+
         }
-
-
         return true;
     }
 
