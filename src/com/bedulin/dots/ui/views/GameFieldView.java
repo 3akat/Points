@@ -94,6 +94,8 @@ public class GameFieldView extends View {
 
     private boolean isApprovingMoveNeed;
 
+    boolean isFirstRender;
+
 
     // ===========================================================
     // Constructors
@@ -159,6 +161,8 @@ public class GameFieldView extends View {
         isApprovingMoveNeed = mSharedPreference.getBoolean(Constants.PREFERENCE_IS_APPROVING_MOVE_NEED, true);
 
         mScaleFactor = 1;
+
+        isFirstRender = true;
     }
 
     // ===========================================================
@@ -170,8 +174,12 @@ public class GameFieldView extends View {
     // ===========================================================
     @Override
     protected void onDraw(Canvas canvas) {
+        if (isFirstRender) {
+            canvas.drawBitmap(mBitmap, 0, 0, mPaint);
+            isFirstRender = false;
+        }
+
         canvas.save();
-        canvas.drawBitmap(mBitmap, 0, 0, mPaint);
         canvas.scale(mScaleFactor, mScaleFactor, canvas.getWidth() / 2, canvas.getHeight() / 2);
         canvas.translate(mTranslateX / mScaleFactor, mTranslateY / mScaleFactor);
 
@@ -272,10 +280,7 @@ public class GameFieldView extends View {
 //            }
                     float x = event.getX();
                     float y = event.getY();
-//                    if (x > mShiftX+mTranslateX &&
-//                            y > mShiftY+mTranslateY &&
-//                            x < mShiftX + CELLS_IN_WIDTH * mCellSize +mTranslateX&&
-//                            y < mShiftY + CELLS_IN_HEIGHT * mCellSize+mTranslateY) {     //checking cells field borders
+
                     Node node = findNearestPoint(x, y);
                     if (node != null) {
                         switch (mNextMove) {
@@ -332,7 +337,6 @@ public class GameFieldView extends View {
             if (mPrevAction == MotionEvent.ACTION_MOVE && event.getAction() != MotionEvent.ACTION_MOVE) {
                 mPrevAction = event.getAction();
             }
-
         }
         return true;
     }
@@ -384,8 +388,8 @@ public class GameFieldView extends View {
     }
 
     private Node findNearestPoint(float x, float y) {
-        int posX = Math.round((x - mShiftX - mTranslateX) / mCellSize);
-        int posY = Math.round((y - mShiftY - mTranslateY) / mCellSize);
+        int posX = Math.round((x * mScaleFactor - mShiftX - mTranslateX) / (mCellSize * mScaleFactor));
+        int posY = Math.round((y * mScaleFactor - mShiftY - mTranslateY) / (mCellSize * mScaleFactor));
         if (posX < POINT_IN_WIDTH && posX >= 0 && posY < POINT_IN_HEIGH && posY >= 0)
             return mPossibleMoves[posX][posY];
         else
