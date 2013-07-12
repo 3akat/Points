@@ -39,6 +39,8 @@ public class GameFieldView extends View {
 
     public final int SCREEN_HEIGHT;
 
+    private final int POINT_IN_HEIGH;
+
     private final int POINT_IN_WIDTH;
 
     private final int CELLS_COLOR;
@@ -115,6 +117,7 @@ public class GameFieldView extends View {
         mPointRadius = mCellSize / 7;
         mShiftX = (SCREEN_WIDTH - CELLS_IN_WIDTH * mCellSize) / 2;
         mShiftY = (SCREEN_HEIGHT - CELLS_IN_HEIGHT * mCellSize) / 2;
+        POINT_IN_HEIGH = CELLS_IN_HEIGHT + 1;
         POINT_IN_WIDTH = CELLS_IN_WIDTH + 1;
 
         // creating drawing field
@@ -134,7 +137,7 @@ public class GameFieldView extends View {
         mPaint.setStrokeCap(Paint.Cap.ROUND);
 
 
-        mPossibleMoves = new Node[(CELLS_IN_HEIGHT + 1)][(CELLS_IN_WIDTH + 1)];
+        mPossibleMoves = new Node[POINT_IN_WIDTH][POINT_IN_HEIGH];
         findPossibleMoves();
         mPlayerOneMoves = new ArrayList<>();
         mPlayerTwoMoves = new ArrayList<>();
@@ -269,11 +272,12 @@ public class GameFieldView extends View {
 //            }
                     float x = event.getX();
                     float y = event.getY();
-                    if (x > mShiftX &&
-                            y > mShiftY &&
-                            x < mShiftX + CELLS_IN_WIDTH * mCellSize &&
-                            y < mShiftY + CELLS_IN_HEIGHT * mCellSize) {     //checking cells field borders
-                        Node node = findNearestPoint(x, y);
+//                    if (x > mShiftX+mTranslateX &&
+//                            y > mShiftY+mTranslateY &&
+//                            x < mShiftX + CELLS_IN_WIDTH * mCellSize +mTranslateX&&
+//                            y < mShiftY + CELLS_IN_HEIGHT * mCellSize+mTranslateY) {     //checking cells field borders
+                    Node node = findNearestPoint(x, y);
+                    if (node != null) {
                         switch (mNextMove) {
                             case PLAYER_ONE_MOVE:
                                 if (!mPlayerTwoMoves.contains(node)) {// there is no other player point in this place
@@ -380,10 +384,12 @@ public class GameFieldView extends View {
     }
 
     private Node findNearestPoint(float x, float y) {
-        int posX = Math.round((x - mShiftX) / mCellSize);
-        int posY = Math.round((y - mShiftY) / mCellSize);
-
-        return mPossibleMoves[posX][posY];
+        int posX = Math.round((x - mShiftX - mTranslateX) / mCellSize);
+        int posY = Math.round((y - mShiftY - mTranslateY) / mCellSize);
+        if (posX < POINT_IN_WIDTH && posX >= 0 && posY < POINT_IN_HEIGH && posY >= 0)
+            return mPossibleMoves[posX][posY];
+        else
+            return null;
     }
 
     //переводим dp в пиксели
