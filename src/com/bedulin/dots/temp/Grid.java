@@ -1,6 +1,11 @@
 package com.bedulin.dots.temp;
 
+import com.bedulin.dots.ui.views.GameFieldView;
+
 import java.util.ArrayList;
+
+import static com.bedulin.dots.Constants.CELLS_IN_HEIGHT;
+import static com.bedulin.dots.Constants.CELLS_IN_WIDTH;
 
 /**
  * Holds a Node[][] 2d array "grid" for path-finding tests, all drawing is done through here.
@@ -9,41 +14,28 @@ import java.util.ArrayList;
  */
 public class Grid {
     private Node[][] grid;
-    private float xIsland, yIsland, xMax, yMax, xMin, yMin;
+    private float xIsland;
+    private float yIsland;
+    private float xMax;
+    private float yMax;
+    private float xMin;
+    private float yMin;
     private Heap heap;
-    private float mCellSize;
-    private float mShiftX;
-    private float mShiftY;
-
-    /**
-     * Grid is created, Land is generated in either uniform or random fashion, landscape 'Map' is created in printed.
-     *
-     * @param xMax    - (int) maximum x coordinate
-     * @param yMax    - (int) maximum y coordinate
-     * @param xIsland (int) number of islands along x axis
-     * @param yIsland (int) number of islands along y axis
-     */
+    private GameFieldView mGameFieldView;
 
     /**
      * This is the constuctor used for comparison. It can be passed an entire Node[][] grid.
-     *
-     * @param xMax    - (int) maximum x coordinate
-     * @param yMax    - (int) maximum y coordinate
-     * @param xIsland (int) number of islands along x axis
-     * @param yIsland (int) number of islands along y axis
-     * @param grid    (Node[][]) an entire grid is passed through for comparison
      */
-    public Grid(float xMax, float yMax, float xIsland, float yIsland, Node[][] grid, float cellSize, float shiftX, float shiftY) {
-        this.xMax = xMax;
-        this.yMax = yMax;
-        this.xIsland = xIsland;
-        this.yIsland = yIsland;
-        this.xMin = this.yMin = 0;
-        this.grid = grid;
+    public Grid(GameFieldView gameFieldView) {
+        mGameFieldView = gameFieldView;
+        xMax = CELLS_IN_WIDTH * mGameFieldView.getCellSize() + mGameFieldView.getShiftX();
+        yMax = CELLS_IN_HEIGHT * mGameFieldView.getCellSize() + mGameFieldView.getShiftY();
+        this.xIsland = 0;
+        this.yIsland = 0;
+        this.xMin = mGameFieldView.getShiftX();
+        this.yMin = mGameFieldView.getShiftY();
+        this.grid = mGameFieldView.getPossibleMoves();
         heap = new Heap();
-        mCellSize = cellSize;
-        mShiftX = shiftX;
-        mShiftY = shiftY;
     }
 
 
@@ -62,38 +54,36 @@ public class Grid {
         boolean d2 = false;
         boolean d3 = false;
 
-        if (walkable(x, y - 1)) {
-            neighbors[0] = (tmpInt(x, y - 1));
+        if (walkable(x, y - mGameFieldView.getCellSize())) {
+            neighbors[0] = (tmpInt(x, y - mGameFieldView.getCellSize()));
             d0 = d1 = true;
         }
-        if (walkable(x + 1, y)) {
-            neighbors[1] = (tmpInt(x + 1, y));
+        if (walkable(x + mGameFieldView.getCellSize(), y)) {
+            neighbors[1] = (tmpInt(x + mGameFieldView.getCellSize(), y));
             d1 = d2 = true;
         }
-        if (walkable(x, y + 1)) {
-            neighbors[2] = (tmpInt(x, y + 1));
+        if (walkable(x, y + mGameFieldView.getCellSize())) {
+            neighbors[2] = (tmpInt(x, y + mGameFieldView.getCellSize()));
             d2 = d3 = true;
         }
-        if (walkable(x - 1, y)) {
-            neighbors[3] = (tmpInt(x - 1, y));
+        if (walkable(x - mGameFieldView.getCellSize(), y)) {
+            neighbors[3] = (tmpInt(x - mGameFieldView.getCellSize(), y));
             d3 = d0 = true;
         }
-        if (d0 && walkable(x - 1, y - 1)) {
-            neighbors[4] = (tmpInt(x - 1, y - 1));
+        if (d0 && walkable(x - mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize())) {
+            neighbors[4] = (tmpInt(x - mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize()));
         }
-        if (d1 && walkable(x + 1, y - 1)) {
-            neighbors[5] = (tmpInt(x + 1, y - 1));
+        if (d1 && walkable(x + mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize())) {
+            neighbors[5] = (tmpInt(x + mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize()));
         }
-        if (d2 && walkable(x + 1, y + 1)) {
-            neighbors[6] = (tmpInt(x + 1, y + 1));
+        if (d2 && walkable(x + mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize())) {
+            neighbors[6] = (tmpInt(x + mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize()));
         }
-        if (d3 && walkable(x - 1, y + 1)) {
-            neighbors[7] = (tmpInt(x - 1, y + 1));
+        if (d3 && walkable(x - mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize())) {
+            neighbors[7] = (tmpInt(x - mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize()));
         }
         return neighbors;
     }
-
-//---------------------------Passability------------------------------//
 
     /**
      * Tests an x,y node's passability
@@ -103,31 +93,35 @@ public class Grid {
      * @return (boolean) true if the node is obstacle free and on the map, false otherwise
      */
     public boolean walkable(float x, float y) {
-        if ((x < xMax && y < yMax)         //smaller than max
-                && (x >= xMin && y >= yMin)       //larger than min
-                && (Math.sin(Math.PI + xIsland * 2.0 * Math.PI * x / 1000.0) + Math.cos(Math.PI / 2.0 + yIsland * 2.0 * Math.PI * y / 1000.0) > -.1)) {   //walkable
-            return true;
-        }
+        if (x <= xMax && y <= yMax)         //smaller than max
+            if (x >= xMin && y >= yMin)       //larger than min
+                if (Math.sin(Math.PI + xIsland * 2.0 * Math.PI * x / 1000.0) + Math.cos(Math.PI / 2.0 + yIsland * 2.0 * Math.PI * y / 1000.0) > -.1)
+                    switch (mGameFieldView.getNextMove()) {                                                                                             //walkable
+                        case GameFieldView.PLAYER_ONE_MOVE:
+                            if (mGameFieldView.getPlayerOneMoves().contains(new Node(x, y)))
+                                return true;
+                            else
+                                return false;
+
+                        case GameFieldView.PLAYER_TWO_MOVE:
+                            if (mGameFieldView.getPlayerTwoMoves().contains(new Node(x, y)))
+                                return true;
+                            else
+                                return false;
+                    }
         return false;
     }
-//--------------------------------------------------------------------//
 
     public ArrayList<Node> pathCreate(Node node) {
         ArrayList<Node> trail = new ArrayList<Node>();
         System.out.println("Tracing Back Path...");
-        while (node.getParent() != null) {
-            try {
-                trail.add(0, node);
-            } catch (Exception e) {
-            }
+        do {
+            trail.add(0, node);
             node = node.getParent();
-        }
+        } while (node!= null);
         System.out.println("Path Trace Complete!");
         return trail;
     }
-//-----------------------------------------------------------------//
-
-//--------------------------HEAP-----------------------------------//
 
     /**
      * Adds a node's (x,y,f) to the heap. The heap is sorted by 'f'.
@@ -153,8 +147,6 @@ public class Grid {
         float[] tmp = heap.pop();
         return getNode((int) tmp[0], (int) tmp[1]);
     }
-//-----------------------------------------------------------------//
-
 
     /**
      * Encapsulates x,y in an int[] for returning. A helper method for the jump method
@@ -177,8 +169,8 @@ public class Grid {
      */
     public Node getNode(float x, float y) {
         try {
-            int posX = Math.round((x - mShiftX) / mCellSize);
-            int posY = Math.round((y - mShiftY) / mCellSize);
+            int posX = Math.round((x - xMin) / mGameFieldView.getCellSize());
+            int posY = Math.round((y - yMin) / mGameFieldView.getCellSize());
 
             return grid[posX][posY];
         } catch (Exception e) {

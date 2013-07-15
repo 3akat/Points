@@ -1,36 +1,35 @@
 package com.bedulin.dots.temp;
 
-import java.util.ArrayList;
+import com.bedulin.dots.ui.views.GameFieldView;
 
 /**
  * @author Clint Mullins
  * @referenced Javascript version of JPS by aniero / https://github.com/aniero
  */
 public class JPS {
+    GameFieldView mGameFieldView;
     Grid grid;
-    private float xMax, yMax, xIsland, yIsland, startX, startY, endX, endY;  //variables for reference grid
-    private float dxMax, dyMax, dstartX, dstartY, dendX, dendY;       //variables for Large Nod
+    private float xMax;
+    private float yMax;
+    private float xIsland;
+    private float yIsland;
+    private float startX;
+    private float startY;
+    private float endX;
+    private float endY;  //variables for reference grid
     private float[] tmpXY;
     private float[][] neighbors;
     private float ng;
-    private Node tmpNode, cur;
+    private Node cur;
     private Node[] successors, possibleSuccess;
-    private ArrayList<Node> trail;
 
     /**
      * Initializer; sets up variables, creates reference grid and actual grid, gets start and end points, initiates search
-     *
-     * @param xMax    (int) maximum x value on map + 1 (if xMax==100, actual x maximum is 99)
-     * @param yMax    (int) maximum y value on map + 1 (if yMax==100, actual y maximum is 99)
-     * @param xIsland (int) when using uniform map generation, how many islands on the x axis
-     * @param yIsland (int) when using uniform map generation, how many islands on the y axis
      */
-    public JPS(float xMax, float yMax, float xIsland, float yIsland, Node[][] preMadeGrid, float cellSize, float shiftX, float shiftY, Node startPos, Node endPos) {
-        this.xMax = xMax; //maximum x value on map + 1 (if xMax==100, actual x maximum is 99)
-        this.yMax = yMax; //maximum y value on map + 1 (if yMax==100, actual y maximum is 99)
-        this.xIsland = xIsland; //when using uniform map generation, how many islands on the x axis
-        this.yIsland = yIsland; //when using uniform map generation, how many islands on the y axis
-        grid = new Grid(xMax, yMax, xIsland, yIsland, preMadeGrid, cellSize, shiftX, shiftY);  //preMadeGrid is passed in because there CAN BE ONLY ONE GRID
+    public JPS(GameFieldView gameFieldView, Node startPos, Node endPos) {
+        mGameFieldView = gameFieldView;
+
+        grid = new Grid(gameFieldView);  //preMadeGrid is passed in because there CAN BE ONLY ONE GRID
 
         this.startX = startPos.x;   //the start point x value
         this.startY = startPos.y;      //the start point y value
@@ -38,26 +37,19 @@ public class JPS {
         this.endX = endPos.x;      //the end point x value
         this.endY = endPos.y;      //the end point y value
 
-//        long timeStart = System.currentTimeMillis();
-//        search();
-//        long timeEnd = System.currentTimeMillis();
-//        System.out.println("Time: " + (timeEnd - timeStart) + " ms");
     }
 
     /**
      * Orchestrates the Jump Point Search; it is explained further in comments below.
      */
     public boolean search() {
-        System.out.println("Jump Point Search\n----------------");
-        System.out.println("Start X: " + startX + " Y: " + startY);  //Start and End points are printed for reference
-        System.out.println("End   X: " + endX + " Y: " + endY);
         grid.getNode(startX, startY).updateGHFP(0, 0, null);
         grid.heapAdd(grid.getNode(startX, startY));  //Start node is added to the heap
         while (true) {
             cur = grid.heapPopNode();              //the current node is removed from the heap.
             if (cur.getX() == endX && cur.getY() == endY) {        //if the end node is found
-                System.out.println("Path Found!");  //print "Path Found!"
-                trail = grid.pathCreate(cur);    //the path is then created
+                //Path Found!
+                mGameFieldView.setPath(grid.pathCreate(cur));    //the path is then created
                 return true;
             }
             possibleSuccess = identifySuccessors(cur);  //get all possible successors of the current node
@@ -67,7 +59,7 @@ public class JPS {
                 }
             }
             if (grid.heapSize() == 0) {                        //if the grid size is 0, and we have not found our end, the end is unreachable
-                System.out.println("No Path....");            //print "No Path...." to (lolSpark) notify user
+                //No Path
                 return false;
             }
         }
@@ -116,7 +108,8 @@ public class JPS {
         float[] jy = {-1, -1}; //used to later check if full or null
         float dx = (x - px) / Math.max(Math.abs(x - px), 1); //because parents aren't always adjacent, this is used to find parent -> child direction (for x)
         float dy = (y - py) / Math.max(Math.abs(y - py), 1); //because parents aren't always adjacent, this is used to find parent -> child direction (for y)
-
+        dx *= mGameFieldView.getCellSize();
+        dy *= mGameFieldView.getCellSize();
         if (!grid.walkable(x, y)) { //if this space is not grid.walkable, return a null.
             return tmpInt(-1, -1); //in this system, returning a {-1,-1} equates to a null and is ignored.
         }
@@ -130,13 +123,13 @@ public class JPS {
             }
         } else { //check for horizontal/vertical
             if (dx != 0) { //moving along x
-                if ((grid.walkable(x + dx, y + 1) && !grid.walkable(x, y + 1)) || //we are moving along the x axis
-                        (grid.walkable(x + dx, y - 1) && !grid.walkable(x, y - 1))) {  //we check our side nodes to see if they are forced neighbors
+                if ((grid.walkable(x + dx, y + mGameFieldView.getCellSize()) && !grid.walkable(x, y + mGameFieldView.getCellSize())) || //we are moving along the x axis
+                        (grid.walkable(x + dx, y - mGameFieldView.getCellSize()) && !grid.walkable(x, y - mGameFieldView.getCellSize()))) {  //we check our side nodes to see if they are forced neighbors
                     return tmpInt(x, y);
                 }
             } else {
-                if ((grid.walkable(x + 1, y + dy) && !grid.walkable(x + 1, y)) ||  //we are moving along the y axis
-                        (grid.walkable(x - 1, y + dy) && !grid.walkable(x - 1, y))) {     //we check our side nodes to see if they are forced neighbors
+                if ((grid.walkable(x + mGameFieldView.getCellSize(), y + dy) && !grid.walkable(x + mGameFieldView.getCellSize(), y)) ||  //we are moving along the y axis
+                        (grid.walkable(x - mGameFieldView.getCellSize(), y + dy) && !grid.walkable(x - mGameFieldView.getCellSize(), y))) {     //we check our side nodes to see if they are forced neighbors
                     return tmpInt(x, y);
                 }
             }
@@ -187,6 +180,9 @@ public class JPS {
             //get the normalized direction of travel
             dx = (x - px) / Math.max(Math.abs(x - px), 1);
             dy = (y - py) / Math.max(Math.abs(y - py), 1);
+            dx *= mGameFieldView.getCellSize();
+            dy *= mGameFieldView.getCellSize();
+
             //search diagonally
             if (dx != 0 && dy != 0) {
                 if (grid.walkable(x, y + dy)) {
@@ -210,11 +206,11 @@ public class JPS {
                         if (grid.walkable(x, y + dy)) {
                             neighbors[0] = (tmpInt(x, y + dy));
                         }
-                        if (!grid.walkable(x + 1, y)) {
-                            neighbors[1] = (tmpInt(x + 1, y + dy));
+                        if (!grid.walkable(x + mGameFieldView.getCellSize(), y)) {
+                            neighbors[1] = (tmpInt(x + mGameFieldView.getCellSize(), y + dy));
                         }
-                        if (!grid.walkable(x - 1, y)) {
-                            neighbors[2] = (tmpInt(x - 1, y + dy));
+                        if (!grid.walkable(x - mGameFieldView.getCellSize(), y)) {
+                            neighbors[2] = (tmpInt(x - mGameFieldView.getCellSize(), y + dy));
                         }
                     }
                 } else {
@@ -222,11 +218,11 @@ public class JPS {
                         if (grid.walkable(x + dx, y)) {
                             neighbors[0] = (tmpInt(x + dx, y));
                         }
-                        if (!grid.walkable(x, y + 1)) {
-                            neighbors[1] = (tmpInt(x + dx, y + 1));
+                        if (!grid.walkable(x, y + mGameFieldView.getCellSize())) {
+                            neighbors[1] = (tmpInt(x + dx, y + mGameFieldView.getCellSize()));
                         }
-                        if (!grid.walkable(x, y - 1)) {
-                            neighbors[2] = (tmpInt(x + dx, y - 1));
+                        if (!grid.walkable(x, y - mGameFieldView.getCellSize())) {
+                            neighbors[2] = (tmpInt(x + dx, y - mGameFieldView.getCellSize()));
                         }
                     }
                 }
