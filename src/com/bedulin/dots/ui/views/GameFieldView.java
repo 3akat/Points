@@ -120,7 +120,6 @@ public class GameFieldView extends View {
         SCREEN_WIDTH = dm.widthPixels;
         SCREEN_HEIGHT = dm.heightPixels;
         Log.d(LOG_TAG, "H:" + SCREEN_HEIGHT + " W:" + SCREEN_WIDTH);
-
         //init size for drawing (points, cells)
         mCellSize = Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) / Math.max(Constants.CELLS_IN_HEIGHT, CELLS_IN_WIDTH);
         mPointRadius = mCellSize / 7;
@@ -409,16 +408,16 @@ public class GameFieldView extends View {
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mPrevAction != MotionEvent.ACTION_MOVE) {
-                        mStartX = event.getX();
-                        mStartY = event.getY();
-                        mStartTranslateX = mTranslateX;
-                        mStartTranslateY = mTranslateY;
-                        mPrevAction = MotionEvent.ACTION_MOVE;
-                    }
-                    mTranslateX = event.getX() - mStartX + mStartTranslateX;
-                    mTranslateY = event.getY() - mStartY + mStartTranslateY;
-                    invalidate();
+//                    if (mPrevAction != MotionEvent.ACTION_MOVE) {
+//                        mStartX = event.getX();
+//                        mStartY = event.getY();
+//                        mStartTranslateX = mTranslateX;
+//                        mStartTranslateY = mTranslateY;
+//                        mPrevAction = MotionEvent.ACTION_MOVE;
+//                    }
+//                    mTranslateX = event.getX() - mStartX + mStartTranslateX;
+//                    mTranslateY = event.getY() - mStartY + mStartTranslateY;
+//                    invalidate();
                     break;
             }
 
@@ -477,8 +476,14 @@ public class GameFieldView extends View {
     }
 
     private Node findNearestPoint(float x, float y) {
-        int posX = Math.round((x * mScaleFactor - mShiftX - mTranslateX) / (mCellSize * mScaleFactor));
-        int posY = Math.round((y * mScaleFactor - mShiftY - mTranslateY) / (mCellSize * mScaleFactor));
+        float X = x - mShiftX - mTranslateX;
+        float Y = y - mShiftY - mTranslateY;
+        if (mScaleFactor > 1) {
+            X += (X - SCREEN_WIDTH / 2) / mScaleFactor - (X - SCREEN_WIDTH / 2);
+            Y += (Y - SCREEN_HEIGHT / 2) / mScaleFactor - (Y - SCREEN_HEIGHT / 2);
+        }
+        int posX = Math.round(X / mCellSize);
+        int posY = Math.round(Y / mCellSize);
         if (posX < POINT_IN_WIDTH && posX >= 0 && posY < POINT_IN_HEIGH && posY >= 0)
             return mPossibleMoves[posX][posY];
         else
