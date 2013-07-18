@@ -71,6 +71,8 @@ public class GameFieldView extends View {
     private float mShiftX;
     private float mShiftY;
 
+    private float mScaleCenterX;
+    private float mScaleCenterY;
     private float mScaleFactor;
     private float mTranslateX;
     private float mTranslateY;
@@ -121,7 +123,7 @@ public class GameFieldView extends View {
         SCREEN_HEIGHT = dm.heightPixels;
         Log.d(LOG_TAG, "H:" + SCREEN_HEIGHT + " W:" + SCREEN_WIDTH);
         //init size for drawing (points, cells)
-        mCellSize = Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) / Math.max(Constants.CELLS_IN_HEIGHT, CELLS_IN_WIDTH);
+        mCellSize = (float) Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) / (float) Math.max(Constants.CELLS_IN_HEIGHT, CELLS_IN_WIDTH);
         mPointRadius = mCellSize / 7;
         mShiftX = (SCREEN_WIDTH - CELLS_IN_WIDTH * mCellSize) / 2;
         mShiftY = (SCREEN_HEIGHT - CELLS_IN_HEIGHT * mCellSize) / 2;
@@ -162,7 +164,9 @@ public class GameFieldView extends View {
 
         isApprovingMoveNeed = mSharedPreference.getBoolean(Constants.PREFERENCE_IS_APPROVING_MOVE_NEED, true);
 
-        mScaleFactor = 1;
+        mScaleFactor = MIN_ZOOM;
+        mScaleCenterX = SCREEN_WIDTH / 2;
+        mScaleCenterY = SCREEN_HEIGHT / 2;
 
         isFirstRender = true;
     }
@@ -221,7 +225,7 @@ public class GameFieldView extends View {
         }
 
         canvas.save();
-        canvas.scale(mScaleFactor, mScaleFactor, canvas.getWidth() / 2, canvas.getHeight() / 2);
+        canvas.scale(mScaleFactor, mScaleFactor, mScaleCenterX, mScaleCenterY);
         canvas.translate(mTranslateX / mScaleFactor, mTranslateY / mScaleFactor);
 
         mPaint.setColor(CELLS_COLOR);
@@ -356,7 +360,7 @@ public class GameFieldView extends View {
                     if (node != null) {
                         switch (mNextMove) {
                             case PLAYER_ONE_MOVE:
-                                if (!mPlayerTwoMoves.contains(node)) {// there is no other player point in this place
+                                if (!mPlayerOneMoves.contains(node) && !mPlayerTwoMoves.contains(node)) {// there is no other player point in this place
                                     if (isApprovingMoveNeed) {
                                         if (node.equals(mPlayerOneTempPoint)) {
                                             mPlayerOneMoves.add(node);
@@ -372,15 +376,10 @@ public class GameFieldView extends View {
 //                                            initSearch();
                                         mNextMove = PLAYER_TWO_MOVE;
                                     }
-                                } else {
-                                    mPlayerOneMoves.add(node);
-//                                    if (mPlayerOneMoves.size() > 3)
-//                                        initSearch();
-                                    mNextMove = PLAYER_TWO_MOVE;
                                 }
                                 break;
                             case PLAYER_TWO_MOVE:
-                                if (!mPlayerOneMoves.contains(node)) {// there is no other player point in this place
+                                if (!mPlayerOneMoves.contains(node) && !mPlayerTwoMoves.contains(node)) {// there is no other player point in this place
                                     if (isApprovingMoveNeed) {
                                         if (node.equals(mPlayerTwoTempPoint)) {
                                             mPlayerTwoMoves.add(node);
@@ -396,11 +395,6 @@ public class GameFieldView extends View {
 //                                            initSearch();
                                         mNextMove = PLAYER_ONE_MOVE;
                                     }
-                                } else {
-                                    mPlayerTwoMoves.add(node);
-//                                    if (mPlayerTwoMoves.size() > 3)
-//                                        initSearch();
-                                    mNextMove = PLAYER_ONE_MOVE;
                                 }
                                 break;
                         }
@@ -408,16 +402,16 @@ public class GameFieldView extends View {
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-//                    if (mPrevAction != MotionEvent.ACTION_MOVE) {
-//                        mStartX = event.getX();
-//                        mStartY = event.getY();
-//                        mStartTranslateX = mTranslateX;
-//                        mStartTranslateY = mTranslateY;
-//                        mPrevAction = MotionEvent.ACTION_MOVE;
-//                    }
-//                    mTranslateX = event.getX() - mStartX + mStartTranslateX;
-//                    mTranslateY = event.getY() - mStartY + mStartTranslateY;
-//                    invalidate();
+                    if (mPrevAction != MotionEvent.ACTION_MOVE) {
+                        mStartX = event.getX();
+                        mStartY = event.getY();
+                        mStartTranslateX = mTranslateX;
+                        mStartTranslateY = mTranslateY;
+                        mPrevAction = MotionEvent.ACTION_MOVE;
+                    }
+                    mTranslateX = event.getX() - mStartX + mStartTranslateX;
+                    mTranslateY = event.getY() - mStartY + mStartTranslateY;
+                    invalidate();
                     break;
             }
 
@@ -478,12 +472,22 @@ public class GameFieldView extends View {
     private Node findNearestPoint(float x, float y) {
         float X = x - mShiftX - mTranslateX;
         float Y = y - mShiftY - mTranslateY;
-        if (mScaleFactor > 1) {
-            X += (X - SCREEN_WIDTH / 2) / mScaleFactor - (X - SCREEN_WIDTH / 2);
-            Y += (Y - SCREEN_HEIGHT / 2) / mScaleFactor - (Y - SCREEN_HEIGHT / 2);
-        }
-        int posX = Math.round(X / mCellSize);
-        int posY = Math.round(Y / mCellSize);
+
+        X = (X - mScaleCenterX) / mScaleFactor + mScaleCenterX;
+        Y = (Y - mScaleCenterY) / mScaleFactor + mScaleCenterY;
+
+//        TODO get to know why it don't works properly
+        float offsetX = 0;
+        float offsetY = 0;
+        if(mScaleFactor>1)
+        if(SCREEN_WIDTH<SCREEN_HEIGHT)
+            offsetY=2*mCellSize*mScaleFactor;
+        else
+            offsetX=2*mCellSize*mScaleFactor;
+
+        int posX = Math.round((X - offsetX) / mCellSize);
+        int posY = Math.round((Y - offsetY) / mCellSize);
+
         if (posX < POINT_IN_WIDTH && posX >= 0 && posY < POINT_IN_HEIGH && posY >= 0)
             return mPossibleMoves[posX][posY];
         else
