@@ -179,17 +179,16 @@ public class JPS {
             if (dx != 0 && dy != 0) {
                 if (grid.walkable(x, y + dy)) {
                     neighbors[0] = (tmpInt(x, y + dy));
+                    neighbors[2] = (tmpInt(x + dx, y + dy));
                 }
                 if (grid.walkable(x + dx, y)) {
                     neighbors[1] = (tmpInt(x + dx, y));
-                }
-                if (grid.walkable(x, y + dy) || grid.walkable(x + dx, y)) {
                     neighbors[2] = (tmpInt(x + dx, y + dy));
                 }
-                if (!grid.walkable(x - dx, y) && grid.walkable(x, y + dy)) {
+                if (grid.walkable(x - dx, y + dy)) {
                     neighbors[3] = (tmpInt(x - dx, y + dy));
                 }
-                if (!grid.walkable(x, y - dy) && grid.walkable(x + dx, y)) {
+                if (grid.walkable(x + dx, y - dy)) {
                     neighbors[4] = (tmpInt(x + dx, y - dy));
                 }
             } else {

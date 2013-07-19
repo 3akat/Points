@@ -288,11 +288,18 @@ public class GameFieldView extends View {
             mPaint.setColor(PLAYER_ONE_COLOR);
             mPaint.setStrokeWidth(mPointRadius);
             for (List<Node> path : mPlayerOnePaths) {
-                int pathLength = path.size() - 1;
-                for (int j = 0; j < pathLength; j++) {
-                    Node thisNode = path.get(j);
-                    Node nextNode = path.get(j + 1);
-                    canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
+                if (path.size() > 3) {
+                    int pathLength = path.size() - 1;
+                    for (int j = 0; j < pathLength; j++) {
+                        Node thisNode = path.get(j);
+                        Node nextNode = path.get(j + 1);
+                        canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
+                        if (j + 1 == pathLength) {
+                            thisNode = nextNode;
+                            nextNode = path.get(0);
+                            canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
+                        }
+                    }
                 }
             }
         }
@@ -300,11 +307,18 @@ public class GameFieldView extends View {
             mPaint.setColor(PLAYER_TWO_COLOR);
             mPaint.setStrokeWidth(mPointRadius);
             for (List<Node> path : mPlayerTwoPaths) {
-                int pathLength = path.size() - 1;
-                for (int j = 0; j < pathLength; j++) {
-                    Node thisNode = path.get(j);
-                    Node nextNode = path.get(j + 1);
-                    canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
+                if (path.size() > 3) {
+                    int pathLength = path.size() - 1;
+                    for (int j = 0; j < pathLength; j++) {
+                        Node thisNode = path.get(j);
+                        Node nextNode = path.get(j + 1);
+                        canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
+                        if (j + 1 == pathLength) {
+                            thisNode = nextNode;
+                            nextNode = path.get(0);
+                            canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
+                        }
+                    }
                 }
             }
         }
