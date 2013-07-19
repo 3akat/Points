@@ -13,10 +13,8 @@ public class JPS {
     private float yMax;
     private float xIsland;
     private float yIsland;
-    private float startX;
-    private float startY;
-    private float endX;
-    private float endY;  //variables for reference grid
+    private Node mStartNode;
+    private Node mEndNode;
     private float[] tmpXY;
     private float[][] neighbors;
     private float ng;
@@ -28,26 +26,20 @@ public class JPS {
      */
     public JPS(GameFieldView gameFieldView, Node startPos, Node endPos) {
         mGameFieldView = gameFieldView;
-
-        grid = new Grid(gameFieldView);  //preMadeGrid is passed in because there CAN BE ONLY ONE GRID
-
-        this.startX = startPos.x;   //the start point x value
-        this.startY = startPos.y;      //the start point y value
-
-        this.endX = endPos.x;      //the end point x value
-        this.endY = endPos.y;      //the end point y value
-
+        grid = new Grid(gameFieldView);
+        mStartNode = startPos;
+        mEndNode = endPos;
     }
 
     /**
      * Orchestrates the Jump Point Search; it is explained further in comments below.
      */
     public boolean search() {
-        grid.getNode(startX, startY).updateGHFP(0, 0, null);
-        grid.heapAdd(grid.getNode(startX, startY));  //Start node is added to the heap
+        grid.getNode(mStartNode.x, mStartNode.y).updateGHFP(0, 0, null);
+        grid.heapAdd(grid.getNode(mStartNode.x, mStartNode.y));  //Start node is added to the heap
         while (true) {
             cur = grid.heapPopNode();              //the current node is removed from the heap.
-            if (cur.getX() == endX && cur.getY() == endY) {        //if the end node is found
+            if (cur.getX() == mEndNode.x && cur.getY() == mEndNode.y) {        //if the end node is found
                 //Path Found!
                 mGameFieldView.setPath(grid.pathCreate(cur));    //the path is then created
                 return true;
@@ -81,7 +73,7 @@ public class JPS {
                 float y = tmpXY[1];
                 ng = (grid.toPointApprox(x, y, node.getX(), node.getY()) + node.getG());   //get the distance from start
                 if (grid.getNode(x, y).getF() <= 0 || grid.getNode(x, y).getG() > ng) {  //if this node is not already found, or we have a shorter distance from the current node
-                    grid.getNode(x, y).updateGHFP(grid.toPointApprox(x, y, node.getX(), node.getY()) + node.getG(), grid.toPointApprox(x, y, endX, endY), node); //then update the rest of it
+                    grid.getNode(x, y).updateGHFP(grid.toPointApprox(x, y, node.getX(), node.getY()) + node.getG(), grid.toPointApprox(x, y, mEndNode.x, mEndNode.y), node); //then update the rest of it
                     successors[i] = grid.getNode(x, y);  //add this node to the successors list to be returned
                 }
             }
@@ -108,12 +100,12 @@ public class JPS {
         float[] jy = {-1, -1}; //used to later check if full or null
         float dx = (x - px) / Math.max(Math.abs(x - px), 1); //because parents aren't always adjacent, this is used to find parent -> child direction (for x)
         float dy = (y - py) / Math.max(Math.abs(y - py), 1); //because parents aren't always adjacent, this is used to find parent -> child direction (for y)
-        dx *= mGameFieldView.getCellSize();
-        dy *= mGameFieldView.getCellSize();
+        dx *= mGameFieldView.CELL_SIZE;
+        dy *= mGameFieldView.CELL_SIZE;
         if (!grid.walkable(x, y)) { //if this space is not grid.walkable, return a null.
             return tmpInt(-1, -1); //in this system, returning a {-1,-1} equates to a null and is ignored.
         }
-        if (x == this.endX && y == this.endY) {   //if end point, return that point. The search is over! Have a beer.
+        if (x == mEndNode.x && y == mEndNode.y) {   //if end point, return that point. The search is over! Have a beer.
             return tmpInt(x, y);
         }
         if (dx != 0 && dy != 0) {  //if x and y both changed, we are on a diagonally adjacent square: here we check for forced neighbors on diagonals
@@ -123,13 +115,13 @@ public class JPS {
             }
         } else { //check for horizontal/vertical
             if (dx != 0) { //moving along x
-                if ((grid.walkable(x + dx, y + mGameFieldView.getCellSize()) && !grid.walkable(x, y + mGameFieldView.getCellSize())) || //we are moving along the x axis
-                        (grid.walkable(x + dx, y - mGameFieldView.getCellSize()) && !grid.walkable(x, y - mGameFieldView.getCellSize()))) {  //we check our side nodes to see if they are forced neighbors
+                if ((grid.walkable(x + dx, y + mGameFieldView.CELL_SIZE) && !grid.walkable(x, y + mGameFieldView.CELL_SIZE)) || //we are moving along the x axis
+                        (grid.walkable(x + dx, y - mGameFieldView.CELL_SIZE) && !grid.walkable(x, y - mGameFieldView.CELL_SIZE))) {  //we check our side nodes to see if they are forced neighbors
                     return tmpInt(x, y);
                 }
             } else {
-                if ((grid.walkable(x + mGameFieldView.getCellSize(), y + dy) && !grid.walkable(x + mGameFieldView.getCellSize(), y)) ||  //we are moving along the y axis
-                        (grid.walkable(x - mGameFieldView.getCellSize(), y + dy) && !grid.walkable(x - mGameFieldView.getCellSize(), y))) {     //we check our side nodes to see if they are forced neighbors
+                if ((grid.walkable(x + mGameFieldView.CELL_SIZE, y + dy) && !grid.walkable(x + mGameFieldView.CELL_SIZE, y)) ||  //we are moving along the y axis
+                        (grid.walkable(x - mGameFieldView.CELL_SIZE, y + dy) && !grid.walkable(x - mGameFieldView.CELL_SIZE, y))) {     //we check our side nodes to see if they are forced neighbors
                     return tmpInt(x, y);
                 }
             }
@@ -180,8 +172,8 @@ public class JPS {
             //get the normalized direction of travel
             dx = (x - px) / Math.max(Math.abs(x - px), 1);
             dy = (y - py) / Math.max(Math.abs(y - py), 1);
-            dx *= mGameFieldView.getCellSize();
-            dy *= mGameFieldView.getCellSize();
+            dx *= mGameFieldView.CELL_SIZE;
+            dy *= mGameFieldView.CELL_SIZE;
 
             //search diagonally
             if (dx != 0 && dy != 0) {
@@ -206,11 +198,11 @@ public class JPS {
                         if (grid.walkable(x, y + dy)) {
                             neighbors[0] = (tmpInt(x, y + dy));
                         }
-                        if (!grid.walkable(x + mGameFieldView.getCellSize(), y)) {
-                            neighbors[1] = (tmpInt(x + mGameFieldView.getCellSize(), y + dy));
+                        if (!grid.walkable(x + dx, y)) {
+                            neighbors[1] = (tmpInt(x + dx, y + dy));
                         }
-                        if (!grid.walkable(x - mGameFieldView.getCellSize(), y)) {
-                            neighbors[2] = (tmpInt(x - mGameFieldView.getCellSize(), y + dy));
+                        if (!grid.walkable(x - dx, y)) {
+                            neighbors[2] = (tmpInt(x - dx, y + dy));
                         }
                     }
                 } else {
@@ -218,19 +210,28 @@ public class JPS {
                         if (grid.walkable(x + dx, y)) {
                             neighbors[0] = (tmpInt(x + dx, y));
                         }
-                        if (!grid.walkable(x, y + mGameFieldView.getCellSize())) {
-                            neighbors[1] = (tmpInt(x + dx, y + mGameFieldView.getCellSize()));
+                        if (!grid.walkable(x, y + dy)) {
+                            neighbors[1] = (tmpInt(x + dx, y + dy));
                         }
-                        if (!grid.walkable(x, y - mGameFieldView.getCellSize())) {
-                            neighbors[2] = (tmpInt(x + dx, y - mGameFieldView.getCellSize()));
+                        if (!grid.walkable(x, y - dy)) {
+                            neighbors[2] = (tmpInt(x + dx, y - dy));
                         }
                     }
                 }
             }
         } else {//return all neighbors
-            return grid.getNeighbors(node); //adds initial nodes to be jumped from!
+            neighbors = grid.getNeighbors(node);
         }
 
-        return neighbors; //this returns the neighbors, you know
+        if (node.equals(mStartNode)) {
+            int len = neighbors.length;
+            for (int i = 0; i < len; i++)
+                if (neighbors[i][0] == mEndNode.x && neighbors[i][1] == mEndNode.y) {
+                    neighbors[i][0] = 0;
+                    neighbors[i][1] = 0;
+                    break;
+                }
+        }
+        return neighbors;
     }
 }

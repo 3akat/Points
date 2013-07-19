@@ -28,8 +28,8 @@ public class Grid {
      */
     public Grid(GameFieldView gameFieldView) {
         mGameFieldView = gameFieldView;
-        xMax = CELLS_IN_WIDTH * mGameFieldView.getCellSize() + mGameFieldView.getShiftX();
-        yMax = CELLS_IN_HEIGHT * mGameFieldView.getCellSize() + mGameFieldView.getShiftY();
+        xMax = CELLS_IN_WIDTH * mGameFieldView.CELL_SIZE + mGameFieldView.getShiftX();
+        yMax = CELLS_IN_HEIGHT * mGameFieldView.CELL_SIZE + mGameFieldView.getShiftY();
         this.xIsland = 0;
         this.yIsland = 0;
         this.xMin = mGameFieldView.getShiftX();
@@ -49,38 +49,30 @@ public class Grid {
         float[][] neighbors = new float[8][2];
         float x = node.getX();
         float y = node.getY();
-        boolean d0 = false; //These booleans are for speeding up the adding of nodes.
-        boolean d1 = false;
-        boolean d2 = false;
-        boolean d3 = false;
 
-        if (walkable(x, y - mGameFieldView.getCellSize())) {
-            neighbors[0] = (tmpInt(x, y - mGameFieldView.getCellSize()));
-            d0 = d1 = true;
+        if (walkable(x, y - mGameFieldView.CELL_SIZE)) {
+            neighbors[0] = (tmpInt(x, y - mGameFieldView.CELL_SIZE));
         }
-        if (walkable(x + mGameFieldView.getCellSize(), y)) {
-            neighbors[1] = (tmpInt(x + mGameFieldView.getCellSize(), y));
-            d1 = d2 = true;
+        if (walkable(x + mGameFieldView.CELL_SIZE, y)) {
+            neighbors[1] = (tmpInt(x + mGameFieldView.CELL_SIZE, y));
         }
-        if (walkable(x, y + mGameFieldView.getCellSize())) {
-            neighbors[2] = (tmpInt(x, y + mGameFieldView.getCellSize()));
-            d2 = d3 = true;
+        if (walkable(x, y + mGameFieldView.CELL_SIZE)) {
+            neighbors[2] = (tmpInt(x, y + mGameFieldView.CELL_SIZE));
         }
-        if (walkable(x - mGameFieldView.getCellSize(), y)) {
-            neighbors[3] = (tmpInt(x - mGameFieldView.getCellSize(), y));
-            d3 = d0 = true;
+        if (walkable(x - mGameFieldView.CELL_SIZE, y)) {
+            neighbors[3] = (tmpInt(x - mGameFieldView.CELL_SIZE, y));
         }
-        if (d0 && walkable(x - mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize())) {
-            neighbors[4] = (tmpInt(x - mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize()));
+        if (walkable(x - mGameFieldView.CELL_SIZE, y - mGameFieldView.CELL_SIZE)) {
+            neighbors[4] = (tmpInt(x - mGameFieldView.CELL_SIZE, y - mGameFieldView.CELL_SIZE));
         }
-        if (d1 && walkable(x + mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize())) {
-            neighbors[5] = (tmpInt(x + mGameFieldView.getCellSize(), y - mGameFieldView.getCellSize()));
+        if (walkable(x + mGameFieldView.CELL_SIZE, y - mGameFieldView.CELL_SIZE)) {
+            neighbors[5] = (tmpInt(x + mGameFieldView.CELL_SIZE, y - mGameFieldView.CELL_SIZE));
         }
-        if (d2 && walkable(x + mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize())) {
-            neighbors[6] = (tmpInt(x + mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize()));
+        if (walkable(x + mGameFieldView.CELL_SIZE, y + mGameFieldView.CELL_SIZE)) {
+            neighbors[6] = (tmpInt(x + mGameFieldView.CELL_SIZE, y + mGameFieldView.CELL_SIZE));
         }
-        if (d3 && walkable(x - mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize())) {
-            neighbors[7] = (tmpInt(x - mGameFieldView.getCellSize(), y + mGameFieldView.getCellSize()));
+        if (walkable(x - mGameFieldView.CELL_SIZE, y + mGameFieldView.CELL_SIZE)) {
+            neighbors[7] = (tmpInt(x - mGameFieldView.CELL_SIZE, y + mGameFieldView.CELL_SIZE));
         }
         return neighbors;
     }
@@ -102,7 +94,6 @@ public class Grid {
                                 return true;
                             else
                                 return false;
-
                         case GameFieldView.PLAYER_TWO_MOVE:
                             if (mGameFieldView.getPlayerTwoMoves().contains(new Node(x, y)))
                                 return true;
@@ -118,7 +109,7 @@ public class Grid {
         do {
             trail.add(0, node);
             node = node.getParent();
-        } while (node!= null);
+        } while (node != null);
         System.out.println("Path Trace Complete!");
         return trail;
     }
@@ -169,8 +160,8 @@ public class Grid {
      */
     public Node getNode(float x, float y) {
         try {
-            int posX = Math.round((x - xMin) / mGameFieldView.getCellSize());
-            int posY = Math.round((y - yMin) / mGameFieldView.getCellSize());
+            int posX = Math.round((x - xMin) / mGameFieldView.CELL_SIZE);
+            int posY = Math.round((y - yMin) / mGameFieldView.CELL_SIZE);
 
             return grid[posX][posY];
         } catch (Exception e) {
