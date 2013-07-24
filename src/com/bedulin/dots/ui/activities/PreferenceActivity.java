@@ -1,11 +1,15 @@
 package com.bedulin.dots.ui.activities;
 
+import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.util.Log;
 import android.widget.Toast;
+import com.bedulin.dots.Constants;
 import com.bedulin.dots.R;
 
 import static com.bedulin.dots.Constants.*;
@@ -13,7 +17,7 @@ import static com.bedulin.dots.Constants.*;
 /**
  * @author Alexandr Bedulin
  */
-public class PreferenceActivity extends android.preference.PreferenceActivity implements Preference.OnPreferenceChangeListener {
+public class PreferenceActivity extends android.preference.PreferenceActivity implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     // ===========================================================
     // Constants
     // ===========================================================
@@ -22,9 +26,16 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
     // ===========================================================
     // Fields
     // ===========================================================
-    private EditTextPreference etpFirstPlayerName, etpSecondPlayerName, etpThinkingTime;
-    private CheckBoxPreference cbpApprovingMove, cbpPlayWithAndroid;
-    private ListPreference lpFirstPlayerColor, lpSecondPlayerColor, lpFieldLinesColor;
+    private Preference pVersionInfo;
+    private Preference pAuthorsInfo;
+    private EditTextPreference etpFirstPlayerName;
+    private EditTextPreference etpSecondPlayerName;
+    private EditTextPreference etpThinkingTime;
+    private CheckBoxPreference cbpApprovingMove;
+    private CheckBoxPreference cbpPlayWithAndroid;
+    private ListPreference lpFirstPlayerColor;
+    private ListPreference lpSecondPlayerColor;
+    private ListPreference lpFieldLinesColor;
 
     // ===========================================================
     // Constructors
@@ -127,13 +138,18 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
                 }
                 break;
             case PREFERENCE_THINKING_TIME:
-                etpThinkingTime.setSummary(newValue + SPACE+ getString(R.string.minutes));
+                etpThinkingTime.setSummary(newValue + SYMBOL_SPACE + getString(R.string.minutes));
                 break;
             case PREFERENCE_PLAY_WITH_ANDROID:
                 boolean enabled = Boolean.getBoolean(newValue.toString());
                 etpThinkingTime.setEnabled(!enabled);
                 break;
         }
+        return true;
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
         return true;
     }
 
@@ -147,6 +163,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
     // Methods
     // ===========================================================
     private void findPreferences() {
+        pVersionInfo = findPreference(PREFERENCE_VERSION_INFO);
+        pAuthorsInfo = findPreference(PREFERENCE_VERSION_INFO);
         etpFirstPlayerName = (EditTextPreference) findPreference(PREFERENCE_FIRST_PLAYER_NAME);
         etpSecondPlayerName = (EditTextPreference) findPreference(PREFERENCE_SECOND_PLAYER_NAME);
         etpThinkingTime = (EditTextPreference) findPreference(PREFERENCE_THINKING_TIME);
@@ -158,6 +176,7 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
     }
 
     private void setListeners() {
+        pAuthorsInfo.setOnPreferenceClickListener(this);
         etpFirstPlayerName.setOnPreferenceChangeListener(this);
         etpSecondPlayerName.setOnPreferenceChangeListener(this);
         etpThinkingTime.setOnPreferenceChangeListener(this);
@@ -169,9 +188,14 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
     }
 
     private void initPreference() {
-        String temp  = etpThinkingTime.getText();
-        if (temp!=null && !temp.equals("")) {
-            etpThinkingTime.setSummary(temp +SPACE+ getString(R.string.minutes));
+        String temp = etpThinkingTime.getText();
+        if (temp != null && !temp.equals("")) {
+            etpThinkingTime.setSummary(temp + SYMBOL_SPACE + getString(R.string.minutes));
+        }
+        try {
+            pVersionInfo.setTitle(getString(R.string.ver) + Constants.SYMBOL_SPACE + getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(LOG, "tvVersion init: " + e.toString());
         }
         etpFirstPlayerName.setSummary(etpFirstPlayerName.getText());
         etpSecondPlayerName.setSummary(etpSecondPlayerName.getText());
@@ -230,6 +254,8 @@ public class PreferenceActivity extends android.preference.PreferenceActivity im
                 break;
         }
     }
+
+
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================

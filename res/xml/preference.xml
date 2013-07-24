@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <com.bedulin.dots.ui.views.CustomPreference
-        android:key="header"/>
     <PreferenceCategory
         android:title="@string/players_settings"/>
     <EditTextPreference
@@ -52,27 +50,22 @@
     <CheckBoxPreference
         android:key="cbpExtraMove"
         android:title="@string/extra_move_title"/>
-    <!--<EditTextPreference-->
-        <!--android:key="etpFieldCellsInHeight"-->
-        <!--android:numeric="integer"-->
-        <!--android:maxLength="2"-->
-        <!--android:defaultValue="10"-->
-        <!--android:title="@string/field_cells_in_height"-->
-        <!--android:summary="10"/>-->
-    <!--<EditTextPreference-->
-        <!--android:key="etpFieldCellsInWidth"-->
-        <!--android:numeric="integer"-->
-        <!--android:maxLength="2"-->
-        <!--android:defaultValue="15"-->
-        <!--android:title="@string/field_cells_in_width"-->
-        <!--android:summary="15"/>-->
-
-    <PreferenceCategory
-        android:title="@string/thinking_time_title"/>
+    <EditTextPreference
+        android:key="etpThinkingTime"
+        android:title="@string/thinking_time_title"
+        android:inputType="numberSigned"
+        android:maxLines="1"/>
     <EditTextPreference
         android:key="etpThinkingTime"
         android:title="@string/game_timer"
         android:inputType="numberSigned"
         android:maxLines="1"/>
+    <PreferenceCategory
+        android:title="@string/about_app"/>
+    <Preference
+        android:key="pVersionInfo"/>
+    <Preference
+        android:title="@string/authors"
+        android:key="pAuthorsInfo"/>
 
 </PreferenceScreen>

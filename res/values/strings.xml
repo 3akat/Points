@@ -26,10 +26,11 @@
     <!--settings-->
     <string name="players_settings">Настройки игроков</string>
     <string name="extra_settings">Дополнительные настройки</string>
+    <string name="about_app">О приложении</string>
     <string name="first_player_name">Имя первого игрока</string>
     <string name="second_player_name">Имя второго игрока</string>
-    <string name="double_click_title">Дополнительний клик, для фиксации позиции точки.</string>
-    <string name="extra_move_title">Дополнительний ход после захвата территории.</string>
+    <string name="double_click_title">Дополнительний клик, для фиксации позиции точки</string>
+    <string name="extra_move_title">Дополнительний ход после захвата территории</string>
     <string name="point_color_title">Цветовые настройки</string>
     <string name="point_color_first_title">Цвет точки первого игрока</string>
     <string name="point_color_second_title">Цвет точки второго игрока</string>
@@ -47,6 +48,7 @@
     <string name="field_cells_in_height">Клеток по вертикали</string>
     <string name="field_cells_in_width">Клеток по горизонтали</string>
     <string name="cells">кл.</string>
+    <string name="authors">Авторы</string>
 
     <!--colors for summaries-->
     <string name="color_white">Белый</string>

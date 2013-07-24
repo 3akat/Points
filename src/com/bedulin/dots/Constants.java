@@ -9,7 +9,8 @@ public class Constants {
     public static final int CELLS_IN_WIDTH = 30;
 
 
-    public static final String PREFERENCE_HEADER = "header";
+    public static final String PREFERENCE_VERSION_INFO = "pVersionInfo";
+    public static final String PREFERENCE_AUTHORS_INFO = "pAuthorsInfo";
     public static final String PREFERENCE_FIRST_PLAYER_NAME = "etpFirstPlayerName";
     public static final String PREFERENCE_SECOND_PLAYER_NAME = "etpSecondPlayerName";
     public static final String PREFERENCE_FIRST_PLAYER_COLOR = "lpFirstPlayerColor";
@@ -36,5 +37,5 @@ public class Constants {
     public static final String COLOR_LIGHT_BLUE = "light_blue";
     public static final String COLOR_LIGHT_PURPLE = "light_purple";
 
-    public static final String SPACE = " ";
+    public static final String SYMBOL_SPACE = " ";
 }
