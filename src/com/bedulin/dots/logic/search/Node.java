@@ -1,4 +1,4 @@
-package com.bedulin.dots.temp;
+package com.bedulin.dots.logic.search;
 
 import android.graphics.PointF;
 

@@ -18,8 +18,8 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import com.bedulin.dots.Constants;
 import com.bedulin.dots.R;
-import com.bedulin.dots.temp.JPS;
-import com.bedulin.dots.temp.Node;
+import com.bedulin.dots.logic.search.JPS;
+import com.bedulin.dots.logic.search.Node;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -288,7 +288,6 @@ public class GameFieldView extends View {
             mPaint.setColor(PLAYER_ONE_COLOR);
             mPaint.setStrokeWidth(mPointRadius);
             for (List<Node> path : mPlayerOnePaths) {
-                if (path.size() > 3) {
                     int pathLength = path.size() - 1;
                     for (int j = 0; j < pathLength; j++) {
                         Node thisNode = path.get(j);
@@ -300,14 +299,12 @@ public class GameFieldView extends View {
                             canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
                         }
                     }
-                }
             }
         }
         if (mPlayerTwoPaths.size() > 0) {
             mPaint.setColor(PLAYER_TWO_COLOR);
             mPaint.setStrokeWidth(mPointRadius);
             for (List<Node> path : mPlayerTwoPaths) {
-                if (path.size() > 3) {
                     int pathLength = path.size() - 1;
                     for (int j = 0; j < pathLength; j++) {
                         Node thisNode = path.get(j);
@@ -319,7 +316,6 @@ public class GameFieldView extends View {
                             canvas.drawLine(thisNode.getX(), thisNode.getY(), nextNode.getX(), nextNode.getY(), mPaint);
                         }
                     }
-                }
             }
         }
         canvas.restore();
@@ -350,11 +346,11 @@ public class GameFieldView extends View {
                                         mPlayerOneMoves.add(node);
                                         mPlayerOneTempPoint = null;
                                     }
-                                }
-                                if (mPlayerOneTempPoint == null) {
-                                    if (mPlayerOneMoves.size() > 3)
-                                        initSearch();
-                                    mNextMove = PLAYER_TWO_MOVE;
+                                    if (mPlayerOneTempPoint == null) {
+                                        if (mPlayerOneMoves.size() > 3)
+                                            initSearch();
+                                        mNextMove = PLAYER_TWO_MOVE;
+                                    }
                                 }
                                 break;
                             case PLAYER_TWO_MOVE:
@@ -466,20 +462,17 @@ public class GameFieldView extends View {
     }
 
     private void initSearch() {
-        Node startPoint = null;
         Node endPoint = null;
         switch (mNextMove) {
             case PLAYER_ONE_MOVE:
-                startPoint = mPlayerOneMoves.get(mPlayerOneMoves.size() - 2);
                 endPoint = mPlayerOneMoves.get(mPlayerOneMoves.size() - 1);
                 break;
             case PLAYER_TWO_MOVE:
-                startPoint = mPlayerTwoMoves.get(mPlayerTwoMoves.size() - 2);
                 endPoint = mPlayerTwoMoves.get(mPlayerTwoMoves.size() - 1);
                 break;
         }
 
-        jpsg = new JPS(this, startPoint, endPoint);
+        jpsg = new JPS(this, endPoint);
         jpsg.search();
     }
 

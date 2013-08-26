@@ -1,6 +1,8 @@
-package com.bedulin.dots.temp;
+package com.bedulin.dots.search;
 
 import com.bedulin.dots.ui.views.GameFieldView;
+
+import java.util.ArrayList;
 
 /**
  * @author Clint Mullins
@@ -41,7 +43,9 @@ public class JPS {
             cur = grid.heapPopNode();              //the current node is removed from the heap.
             if (cur.getX() == mEndNode.x && cur.getY() == mEndNode.y) {        //if the end node is found
                 //Path Found!
-                mGameFieldView.setPath(grid.pathCreate(cur));    //the path is then created
+                ArrayList tempPath = grid.pathCreate(cur);
+                if (tempPath.size() > 3)
+                    mGameFieldView.setPath(grid.pathCreate(cur));    //the path is then created
                 return true;
             }
             possibleSuccess = identifySuccessors(cur);  //get all possible successors of the current node
@@ -115,13 +119,13 @@ public class JPS {
             }
         } else { //check for horizontal/vertical
             if (dx != 0) { //moving along x
-                if ((grid.walkable(x + dx, y + mGameFieldView.CELL_SIZE) && !grid.walkable(x, y + mGameFieldView.CELL_SIZE)) || //we are moving along the x axis
-                        (grid.walkable(x + dx, y - mGameFieldView.CELL_SIZE) && !grid.walkable(x, y - mGameFieldView.CELL_SIZE))) {  //we check our side nodes to see if they are forced neighbors
+                if ((grid.walkable(x + dx, y + dy) && !grid.walkable(x, y + dy)) || //we are moving along the x axis
+                        (grid.walkable(x + dx, y - dy) && !grid.walkable(x, y - dy))) {  //we check our side nodes to see if they are forced neighbors
                     return tmpInt(x, y);
                 }
             } else {
-                if ((grid.walkable(x + mGameFieldView.CELL_SIZE, y + dy) && !grid.walkable(x + mGameFieldView.CELL_SIZE, y)) ||  //we are moving along the y axis
-                        (grid.walkable(x - mGameFieldView.CELL_SIZE, y + dy) && !grid.walkable(x - mGameFieldView.CELL_SIZE, y))) {     //we check our side nodes to see if they are forced neighbors
+                if ((grid.walkable(x + dx, y + dy) && !grid.walkable(x + dx, y)) ||  //we are moving along the y axis
+                        (grid.walkable(x - dx, y + dy) && !grid.walkable(x - dx, y))) {     //we check our side nodes to see if they are forced neighbors
                     return tmpInt(x, y);
                 }
             }
@@ -185,10 +189,10 @@ public class JPS {
                     neighbors[1] = (tmpInt(x + dx, y));
                     neighbors[2] = (tmpInt(x + dx, y + dy));
                 }
-                if (grid.walkable(x - dx, y + dy)) {
+                if (!grid.walkable(x - dx, y) && grid.walkable(x, y + dy)) {
                     neighbors[3] = (tmpInt(x - dx, y + dy));
                 }
-                if (grid.walkable(x + dx, y - dy)) {
+                if (!grid.walkable(x, y - dy) && grid.walkable(x + dx, y)) {
                     neighbors[4] = (tmpInt(x + dx, y - dy));
                 }
             } else {
@@ -197,11 +201,11 @@ public class JPS {
                         if (grid.walkable(x, y + dy)) {
                             neighbors[0] = (tmpInt(x, y + dy));
                         }
-                        if (!grid.walkable(x + dx, y)) {
-                            neighbors[1] = (tmpInt(x + dx, y + dy));
+                        if (!grid.walkable(x + mGameFieldView.CELL_SIZE, y)) {
+                            neighbors[1] = (tmpInt(x + mGameFieldView.CELL_SIZE, y + dy));
                         }
-                        if (!grid.walkable(x - dx, y)) {
-                            neighbors[2] = (tmpInt(x - dx, y + dy));
+                        if (!grid.walkable(x - mGameFieldView.CELL_SIZE, y)) {
+                            neighbors[2] = (tmpInt(x - mGameFieldView.CELL_SIZE, y + dy));
                         }
                     }
                 } else {
@@ -209,11 +213,11 @@ public class JPS {
                         if (grid.walkable(x + dx, y)) {
                             neighbors[0] = (tmpInt(x + dx, y));
                         }
-                        if (!grid.walkable(x, y + dy)) {
-                            neighbors[1] = (tmpInt(x + dx, y + dy));
+                        if (!grid.walkable(x, y + mGameFieldView.CELL_SIZE)) {
+                            neighbors[1] = (tmpInt(x + dx, y + mGameFieldView.CELL_SIZE));
                         }
-                        if (!grid.walkable(x, y - dy)) {
-                            neighbors[2] = (tmpInt(x + dx, y - dy));
+                        if (!grid.walkable(x, y - mGameFieldView.CELL_SIZE)) {
+                            neighbors[2] = (tmpInt(x + dx, y - mGameFieldView.CELL_SIZE));
                         }
                     }
                 }

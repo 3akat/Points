@@ -1,4 +1,4 @@
-package com.bedulin.dots.temp;
+package com.bedulin.dots.search;
 
 import com.bedulin.dots.ui.views.GameFieldView;
 
@@ -87,7 +87,6 @@ public class Grid {
     public boolean walkable(float x, float y) {
         if (x <= xMax && y <= yMax)         //smaller than max
             if (x >= xMin && y >= yMin)       //larger than min
-                if (Math.sin(Math.PI + xIsland * 2.0 * Math.PI * x / 1000.0) + Math.cos(Math.PI / 2.0 + yIsland * 2.0 * Math.PI * y / 1000.0) > -.1)
                     switch (mGameFieldView.getNextMove()) {                                                                                             //walkable
                         case GameFieldView.PLAYER_ONE_MOVE:
                             if (mGameFieldView.getPlayerOneMoves().contains(new Node(x, y)))
