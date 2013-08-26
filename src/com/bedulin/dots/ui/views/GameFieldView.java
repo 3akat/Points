@@ -38,9 +38,9 @@ public class GameFieldView extends View {
     // ===========================================================
     private static final String LOG_TAG = GameFieldView.class.getSimpleName();
 
-    public static final int PLAYER_ONE_MOVE = 1;
+    public static final int PLAYER_ONE_MOVE = 0;
 
-    public static final int PLAYER_TWO_MOVE = 2;
+    public static final int PLAYER_TWO_MOVE = 1;
 
     public final int SCREEN_WIDTH;
 
@@ -474,6 +474,7 @@ public class GameFieldView extends View {
 
         jpsg = new JPS(this, endPoint);
         jpsg.search();
+        Log.e(LOG_TAG,"search "+mNextMove);
     }
 
     //переводим dp в пиксели
