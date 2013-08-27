@@ -142,10 +142,18 @@ public class JPS {
         if (x == mEndNode.x && y == mEndNode.y) {   //if end point, return that point. The search is over! Have a beer.
             return tmpInt(x, y);
         }
-        if (dx != 0 && dy != 0) {  //if x and y both changed, we are on a diagonally adjacent square: here we check for forced neighbors on diagonals
-            if ((grid.walkable(x - dx, y + dy) && !grid.walkable(x - dx, y)) || //we are moving diagonally, we don't check the parent, or our next diagonal step, but the other diagonals
-                    (grid.walkable(x + dx, y - dy) && !grid.walkable(x, y - dy))) {  //if we find a forced neighbor here, we are on a jump point, and we return the current position
-                return tmpInt(x, y);
+        if (dx != 0 && dy != 0) {
+            if (grid.walkable(x + dx, y + dy)) {
+                return jump(x + dx, y + dy, x, y);
+
+            } else if (grid.walkable(x - dx, y + dy)) {
+                return jump(x - dx, y + dy, x, y);
+
+            } else if (grid.walkable(x - dx, y - dy)) {
+                return jump(x - dx, y - dy, x, y);
+
+            } else if (grid.walkable(x + dx, y - dy)) {
+                return jump(x + dx, y - dy, x, y);
             }
         } else { //check for horizontal/vertical
             if (dx != 0) { //moving along x
@@ -168,11 +176,8 @@ public class JPS {
                 return tmpInt(x, y);
             }
         }
-        if (grid.walkable(x + dx, y) || grid.walkable(x, y + dy)) { //moving diagonally, must make sure one of the vertical/horizontal neighbors is open to allow the path
-            return jump(x + dx, y + dy, x, y);
-        } else { //if we are trying to move diagonally but we are blocked by two touching corners of adjacent nodes, we return a null
-            return tmpInt(-1, -1);
-        }
+
+        return tmpInt(-1, -1);
     }
 
     /**
@@ -194,74 +199,7 @@ public class JPS {
      * @return (ArrayList<Node>) list of nodes that will be jumped
      */
     public float[][] getNeighborsPrune(Node node) {
-        Node parent = node.getParent();    //the parent node is retrieved for x,y values
-        float x = node.getX();
-        float y = node.getY();
-        float px, py, dx, dy;
-        float[][] neighbors = new float[5][2];
-        //directed pruning: can ignore most neighbors, unless forced
-        if (parent != null) {
-            px = parent.getX();
-            py = parent.getY();
-            //get the normalized direction of travel
-            dx = (x - px) / Math.max(Math.abs(x - px), 1);
-            dy = (y - py) / Math.max(Math.abs(y - py), 1);
-            dx *= mGameFieldView.CELL_SIZE;
-            dy *= mGameFieldView.CELL_SIZE;
-
-            //search diagonally
-            if (dx != 0 && dy != 0) {
-                if (grid.walkable(x, y + dy)) {
-                    neighbors[0] = (tmpInt(x, y + dy));
-                }
-                if (grid.walkable(x + dx, y)) {
-                    neighbors[1] = (tmpInt(x + dx, y));
-                }
-                if (grid.walkable(x + dx, y + dy) && !(x + dx == node.getParent().x && y + dy == node.getParent().y)) {
-                    neighbors[2] = (tmpInt(x + dx, y + dy));
-                } else if (grid.walkable(x + dx, y - dy) && !(x + dx == node.getParent().x && y - dy == node.getParent().y)) {
-                    neighbors[2] = (tmpInt(x + dx, y - dy));
-                } else if (grid.walkable(x - dx, y - dy) && !(x - dx == node.getParent().x && y - dy == node.getParent().y)) {
-                    neighbors[2] = (tmpInt(x - dx, y - dy));
-                } else if (grid.walkable(x - dx, y + dy) && !(x - dx == node.getParent().x && y + dy == node.getParent().y)) {
-                    neighbors[2] = (tmpInt(x - dx, y + dy));
-                }
-                if (!grid.walkable(x - dx, y) && grid.walkable(x, y + dy)) {
-                    neighbors[3] = (tmpInt(x - dx, y + dy));
-                }
-                if (!grid.walkable(x, y - dy) && grid.walkable(x + dx, y)) {
-                    neighbors[4] = (tmpInt(x + dx, y - dy));
-                }
-            } else {
-                if (dx == 0) {
-                    if (grid.walkable(x, y + dy)) {
-                        if (grid.walkable(x, y + dy)) {
-                            neighbors[0] = (tmpInt(x, y + dy));
-                        }
-                        if (!grid.walkable(x + mGameFieldView.CELL_SIZE, y)) {
-                            neighbors[1] = (tmpInt(x + mGameFieldView.CELL_SIZE, y + dy));
-                        }
-                        if (!grid.walkable(x - mGameFieldView.CELL_SIZE, y)) {
-                            neighbors[2] = (tmpInt(x - mGameFieldView.CELL_SIZE, y + dy));
-                        }
-                    }
-                } else {
-                    if (grid.walkable(x + dx, y)) {
-                        if (grid.walkable(x + dx, y)) {
-                            neighbors[0] = (tmpInt(x + dx, y));
-                        }
-                        if (!grid.walkable(x, y + mGameFieldView.CELL_SIZE)) {
-                            neighbors[1] = (tmpInt(x + dx, y + mGameFieldView.CELL_SIZE));
-                        }
-                        if (!grid.walkable(x, y - mGameFieldView.CELL_SIZE)) {
-                            neighbors[2] = (tmpInt(x + dx, y - mGameFieldView.CELL_SIZE));
-                        }
-                    }
-                }
-            }
-        } else {//return all neighbors
-            neighbors = grid.getNeighbors(node);
-        }
+        neighbors = grid.getNeighbors(node);
 
         if (node.equals(mStartNode)) {
             int len = neighbors.length;
