@@ -484,7 +484,6 @@ public class GameFieldView extends View {
         return dp * (metrics.densityDpi / 160f);
     }
 
-
     // ===========================================================
     // Inner and Anonymous Classes
     // ===========================================================
