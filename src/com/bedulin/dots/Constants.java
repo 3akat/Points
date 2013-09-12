@@ -10,7 +10,6 @@ public class Constants {
 
 
     public static final String PREFERENCE_VERSION_INFO = "pVersionInfo";
-    public static final String PREFERENCE_AUTHORS_INFO = "pAuthorsInfo";
     public static final String PREFERENCE_FIRST_PLAYER_NAME = "etpFirstPlayerName";
     public static final String PREFERENCE_SECOND_PLAYER_NAME = "etpSecondPlayerName";
     public static final String PREFERENCE_FIRST_PLAYER_COLOR = "lpFirstPlayerColor";

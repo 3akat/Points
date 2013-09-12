@@ -27,7 +27,11 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     // ===========================================================
     // Fields
     // ===========================================================
-    private Button btnResume, btnNewGame, btnSave, btnLoad, btnSettings, btnExit;
+    private Button btnResume;
+    private Button btnNewGame;
+    private Button btnSettings;
+    private Button btnAbout;
+
     private TextView tvVersion;
 
     private int mMenuMode;
@@ -90,34 +94,11 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                     startNewGame();
                 }
                 break;
-            case R.id.btnSave:
-                saveGame();
-                break;
-            case R.id.btnLoad:
-                loadGame();
-                break;
             case R.id.btnSettings:
                 showSettings();
                 break;
-            case R.id.btnExit:
-                if (mMenuMode == MENU_MODE_PAUSE) {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-                    dialog.setMessage(getString(R.string.exit_game_warring));
-                    dialog.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            finish();
-                        }
-                    });
-                    dialog.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                        }
-                    });
-                    dialog.show();
-                } else {
-                    finish();
-                }
+            case R.id.btnAbout:
+                showAbout();
                 break;
         }
     }
@@ -156,19 +137,15 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         tvVersion = (TextView) findViewById(R.id.tvVersion);
         btnResume = (Button) findViewById(R.id.btnResume);
         btnNewGame = (Button) findViewById(R.id.btnNewGame);
-        btnSave = (Button) findViewById(R.id.btnSave);
-        btnLoad = (Button) findViewById(R.id.btnLoad);
         btnSettings = (Button) findViewById(R.id.btnSettings);
-        btnExit = (Button) findViewById(R.id.btnExit);
+        btnAbout = (Button) findViewById(R.id.btnAbout);
     }
 
     private void setListeners() {
         btnResume.setOnClickListener(this);
         btnNewGame.setOnClickListener(this);
-        btnSave.setOnClickListener(this);
-        btnLoad.setOnClickListener(this);
         btnSettings.setOnClickListener(this);
-        btnExit.setOnClickListener(this);
+        btnAbout.setOnClickListener(this);
     }
 
     private void resumeLastGame() {
@@ -186,18 +163,20 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     }
 
     private void saveGame() {
-//        TODO need to make saving algorithm here
-        Intent intent = new Intent(this, SaveGameActiity.class);
-        startActivity(intent);
+
     }
 
     private void loadGame() {
-        Intent intent = new Intent(this, LoadGameActivity.class);
-        startActivity(intent);
+
     }
 
     private void showSettings() {
         Intent intent = new Intent(this, PreferenceActivity.class);
+        startActivity(intent);
+    }
+
+    private void showAbout() {
+        Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);
     }
 

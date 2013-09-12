@@ -64,8 +64,5 @@
         android:title="@string/about_app"/>
     <Preference
         android:key="pVersionInfo"/>
-    <Preference
-        android:title="@string/authors"
-        android:key="pAuthorsInfo"/>
 
 </PreferenceScreen>

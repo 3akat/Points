@@ -2,10 +2,11 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/root"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
     <TextView
-        android:text="jkgvkjgv"
+        android:text="@string/authors"
         android:padding="10dp"
         android:textSize="25sp"
         android:layout_centerHorizontal="true"

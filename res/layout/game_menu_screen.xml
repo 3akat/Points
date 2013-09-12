@@ -26,22 +26,13 @@
         android:text="@string/new_game"/>
 
     <Button
-        android:id="@+id/btnSave"
-        style="@style/menu_btn_style"
-        android:text="@string/save"/>
-
-    <Button
-        android:id="@+id/btnLoad"
-        style="@style/menu_btn_style"
-        android:text="@string/load"/>
-
-    <Button
         android:id="@+id/btnSettings"
         style="@style/menu_btn_style"
         android:text="@string/settings"/>
 
     <Button
-        android:id="@+id/btnExit"
+        android:id="@+id/btnAbout"
         style="@style/menu_btn_style"
-        android:text="@string/exit"/>
+        android:text="@string/about_app"/>
+
 </LinearLayout>
