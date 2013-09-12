@@ -34,8 +34,12 @@ public class GameFieldView extends View {
     private static final String LOG_TAG = GameFieldView.class.getSimpleName();
 
     public static final int PLAYER_ONE_MOVE = 0;
-
     public static final int PLAYER_TWO_MOVE = 1;
+
+    private static final int TRANSLATE_X_LEFT_MAX = -400;
+    private static final int TRANSLATE_X_RIGHT_MAX = 400;
+    private static final int TRANSLATE_Y_LEFT_MAX = -400;
+    private static final int TRANSLATE_Y_RIGHT_MAX = 400;
 
     public final int SCREEN_WIDTH;
 
@@ -377,8 +381,15 @@ public class GameFieldView extends View {
                         mStartTranslateY = mTranslateY;
                         mPrevAction = MotionEvent.ACTION_MOVE;
                     }
-                    mTranslateX = event.getX() - mStartX + mStartTranslateX;
-                    mTranslateY = event.getY() - mStartY + mStartTranslateY;
+
+                    // don't allow to move cells too match
+                    float newTranslateX = event.getX() - mStartX + mStartTranslateX;
+                    if (newTranslateX < mTranslateX && mTranslateX > TRANSLATE_X_LEFT_MAX || newTranslateX > mTranslateX && mTranslateX < TRANSLATE_X_RIGHT_MAX)
+                        mTranslateX = event.getX() - mStartX + mStartTranslateX;
+                    float newTranslateY = event.getY() - mStartY + mStartTranslateY;
+                    if (newTranslateY < mTranslateY && mTranslateY > TRANSLATE_Y_LEFT_MAX || newTranslateY > mTranslateY && mTranslateY < TRANSLATE_Y_RIGHT_MAX)
+                        mTranslateY = event.getY() - mStartY + mStartTranslateY;
+
                     invalidate();
                     break;
             }
@@ -437,8 +448,8 @@ public class GameFieldView extends View {
     }
 
     private Node findNearestPoint(float x, float y) {
-        float X = x - mShiftX*mScaleFactor - mTranslateX;
-        float Y = y - mShiftY*mScaleFactor - mTranslateY;
+        float X = x - mShiftX * mScaleFactor - mTranslateX;
+        float Y = y - mShiftY * mScaleFactor - mTranslateY;
 
         X = (X - mScaleCenterX) / mScaleFactor + mScaleCenterX;
         Y = (Y - mScaleCenterY) / mScaleFactor + mScaleCenterY;
