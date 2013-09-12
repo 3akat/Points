@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.bedulin.dots"
           android:versionCode="0"
-          android:versionName="0.6.3">
+          android:versionName="0.5.3">
 
 
     <uses-sdk android:minSdkVersion="8"/>

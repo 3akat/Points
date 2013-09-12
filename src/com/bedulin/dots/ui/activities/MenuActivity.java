@@ -172,11 +172,11 @@ public class MenuActivity extends Activity implements View.OnClickListener {
     }
 
     private void resumeLastGame() {
-        finish();
+//        finish();
 //        TODO need to load last saved game here
 //        Intent intent = new Intent(this, GameFieldActivity.class);
 //        startActivity(intent);
-        Toast.makeText(this, "Загрузака последней игры", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "loading last game", Toast.LENGTH_SHORT).show();
     }
 
     private void startNewGame() {

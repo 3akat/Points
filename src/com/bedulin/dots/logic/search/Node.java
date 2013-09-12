@@ -3,14 +3,20 @@ package com.bedulin.dots.logic.search;
 import android.graphics.PointF;
 
 public class Node extends PointF {
-    private float g, h, f;  //g = from start; h = to end, f = both together
-    private boolean pass;
-    private Node parent;
+  public float g;
+  public float h;
+  public float f;  //g = from start; h = to end, f = both together
+  public int posX;
+  public int posY;
+  public boolean pass;
+  public Node parent;
 
-    public Node(float x, float y) {
+    public Node(float x, float y, int posX, int posY) {
         this.x = x;
         this.y = y;
         this.pass = true;
+        this.posX = posX;
+        this.posY = posY;
     }
 
     public void updateGHFP(float g, float h, Node parent) {
@@ -30,41 +36,8 @@ public class Node extends PointF {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 71 * hash + (int)this.x;
-        hash = 71 * hash + (int)this.y;
+        hash = 71 * hash + (int) this.x;
+        hash = 71 * hash + (int) this.y;
         return hash;
-    }
-
-    public boolean setPass(boolean pass) {
-        this.pass = pass;
-        return pass;
-    }
-
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getG() {
-        return g;
-    }
-
-    public float getH() {
-        return h;
-    }
-
-    public float getF() {
-        return f;
-    }
-
-    public boolean isPass() {
-        return pass;
-    }
-
-    public Node getParent() {
-        return parent;
     }
 }
