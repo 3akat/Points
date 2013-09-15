@@ -7,6 +7,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import com.bedulin.dots.R;
+import com.crittercism.app.Crittercism;
 
 /**
  * @author Alexandr Bedulin
@@ -35,7 +36,9 @@ public class LauncherActivity extends Activity implements Animation.AnimationLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crittercism.init(getApplicationContext(), "5235d18cd0d8f77d48000001");
         setContentView(R.layout.launcher_screen);
+
         ivLauncher = (ImageView) findViewById(R.id.ivLauncher);
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.launcher_anim);
         anim.setAnimationListener(this);
