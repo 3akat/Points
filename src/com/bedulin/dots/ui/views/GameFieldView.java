@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -19,7 +20,10 @@ import com.bedulin.dots.Constants;
 import com.bedulin.dots.R;
 import com.bedulin.dots.logic.search.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.bedulin.dots.Constants.CELLS_IN_HEIGHT;
 import static com.bedulin.dots.Constants.CELLS_IN_WIDTH;
@@ -76,13 +80,6 @@ public class GameFieldView extends View {
     private float mScaleFactor;
     private float mTranslateX;
     private float mTranslateY;
-    private float mStartTranslateX;
-    private float mStartTranslateY;
-
-    private float mStartX;
-    private float mStartY;
-
-    private int mPrevAction;
 
     private Node[][] mPossibleMoves;
     private ArrayList<Node> mPlayerOneMoves;
@@ -96,8 +93,10 @@ public class GameFieldView extends View {
 
     private ProgressDialog mProgressDialog;
 
+    private GestureDetector mGestureDirector;
     private ScaleGestureDetector mScaleGestureDirector;
     private ScaleGestureDetector.SimpleOnScaleGestureListener mScaleListener;
+    private GestureDetector.SimpleOnGestureListener mSimpleGestureListener;
 
     private SharedPreferences mSharedPreference;
 
@@ -138,8 +137,10 @@ public class GameFieldView extends View {
 
         // init colors for drawing (cells, player one/two points)
         CELLS_COLOR = context.getResources().getColor(R.color.light_blue);
-        PLAYER_ONE_COLOR = findColorByName(mSharedPreference.getString(Constants.PREFERENCE_FIRST_PLAYER_COLOR, Constants.PREFERENCE_DEFAULT_FIRST_PLAYER_COLOR));
-        PLAYER_TWO_COLOR = findColorByName(mSharedPreference.getString(Constants.PREFERENCE_SECOND_PLAYER_COLOR, Constants.PREFERENCE_DEFAULT_SECOND_PLAYER_COLOR));
+        PLAYER_ONE_COLOR = findColorByName(mSharedPreference.getString(
+                Constants.PREFERENCE_FIRST_PLAYER_COLOR, Constants.PREFERENCE_DEFAULT_FIRST_PLAYER_COLOR));
+        PLAYER_TWO_COLOR = findColorByName(mSharedPreference.getString(
+                Constants.PREFERENCE_SECOND_PLAYER_COLOR, Constants.PREFERENCE_DEFAULT_SECOND_PLAYER_COLOR));
 
         // init drawing tools
         mPaint = new Paint(Paint.DITHER_FLAG);
@@ -162,8 +163,70 @@ public class GameFieldView extends View {
                 return true;
             }
         };
-
         mScaleGestureDirector = new ScaleGestureDetector(context, mScaleListener);
+
+        mSimpleGestureListener = new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                // don't allow to move cells too match
+                float newTranslateX = mTranslateX - distanceX;
+                if (newTranslateX < mTranslateX && mTranslateX > TRANSLATE_X_LEFT_MAX || newTranslateX > mTranslateX && mTranslateX < TRANSLATE_X_RIGHT_MAX)
+                    mTranslateX = newTranslateX;
+                float newTranslateY = mTranslateY - distanceY;
+                if (newTranslateY < mTranslateY && mTranslateY > TRANSLATE_Y_LEFT_MAX || newTranslateY > mTranslateY && mTranslateY < TRANSLATE_Y_RIGHT_MAX)
+                    mTranslateY = newTranslateY;
+                invalidate();
+                return true;
+            }
+
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent event) {
+                float touchX = event.getX();
+                float touchY = event.getY();
+                Node node = findNearestPoint(touchX, touchY);
+                if (node != null) { // click was inside cell field
+                    switch (mNowMoves) {
+                        case PLAYER_ONE_MOVE:
+                            if (isApprovingMoveNeed) {
+                                if (node.equals(mPlayerOneTempPoint)) {
+                                    mPlayerOneMoves.add(node);
+                                    mPlayerOneTempPoint = null;
+                                    mPossibleMoves[node.posX][node.posY] = null;
+                                    mNowMoves = PLAYER_TWO_MOVE;
+                                } else {
+                                    mPlayerOneTempPoint = node;
+                                }
+                            } else {
+                                mPlayerOneMoves.add(node);
+                                mPossibleMoves[node.posX][node.posY] = null;
+                                mPlayerOneTempPoint = null;
+                                mNowMoves = PLAYER_TWO_MOVE;
+                            }
+                            break;
+
+                        case PLAYER_TWO_MOVE:
+                            if (isApprovingMoveNeed) {
+                                if (node.equals(mPlayerTwoTempPoint)) {
+                                    mPlayerTwoMoves.add(node);
+                                    mPlayerTwoTempPoint = null;
+                                    mPossibleMoves[node.posX][node.posY] = null;
+                                    mNowMoves = PLAYER_ONE_MOVE;
+                                } else {
+                                    mPlayerTwoTempPoint = node;
+                                }
+                            } else {
+                                mPlayerTwoMoves.add(node);
+                                mPossibleMoves[node.posX][node.posY] = null;
+                                mPlayerTwoTempPoint = null;
+                                mNowMoves = PLAYER_ONE_MOVE;
+                            }
+                    }
+                    invalidate();
+                }
+                return true;
+            }
+        };
+        mGestureDirector = new GestureDetector(context, mSimpleGestureListener);
 
         isApprovingMoveNeed = mSharedPreference.getBoolean(Constants.PREFERENCE_IS_APPROVING_MOVE_NEED, true);
 
@@ -327,77 +390,9 @@ public class GameFieldView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         mScaleGestureDirector.onTouchEvent(event);
 
-        if (!mScaleGestureDirector.isInProgress()) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_UP:
-                    float x = event.getX();
-                    float y = event.getY();
-                    Node node = findNearestPoint(x, y);
-                    if (node != null) { // click was inside field
-                        switch (mNowMoves) {
-                            case PLAYER_ONE_MOVE:
-                                if (isApprovingMoveNeed) {
-                                    if (node.equals(mPlayerOneTempPoint)) {
-                                        mPlayerOneMoves.add(node);
-                                        mPlayerOneTempPoint = null;
-                                        mPossibleMoves[node.posX][node.posY] = null;
-                                        mNowMoves = PLAYER_TWO_MOVE;
-                                    } else {
-                                        mPlayerOneTempPoint = node;
-                                    }
-                                } else {
-                                    mPlayerOneMoves.add(node);
-                                    mPossibleMoves[node.posX][node.posY] = null;
-                                    mPlayerOneTempPoint = null;
-                                    mNowMoves = PLAYER_TWO_MOVE;
-                                }
-                                break;
+        if (!mScaleGestureDirector.isInProgress())
+            mGestureDirector.onTouchEvent(event);
 
-                            case PLAYER_TWO_MOVE:
-                                if (isApprovingMoveNeed) {
-                                    if (node.equals(mPlayerTwoTempPoint)) {
-                                        mPlayerTwoMoves.add(node);
-                                        mPlayerTwoTempPoint = null;
-                                        mPossibleMoves[node.posX][node.posY] = null;
-                                        mNowMoves = PLAYER_ONE_MOVE;
-                                    } else {
-                                        mPlayerTwoTempPoint = node;
-                                    }
-                                } else {
-                                    mPlayerTwoMoves.add(node);
-                                    mPossibleMoves[node.posX][node.posY] = null;
-                                    mPlayerTwoTempPoint = null;
-                                    mNowMoves = PLAYER_ONE_MOVE;
-                                }
-                        }
-                        invalidate();
-                    }
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if (mPrevAction != MotionEvent.ACTION_MOVE) {
-                        mStartX = event.getX();
-                        mStartY = event.getY();
-                        mStartTranslateX = mTranslateX;
-                        mStartTranslateY = mTranslateY;
-                        mPrevAction = MotionEvent.ACTION_MOVE;
-                    }
-
-                    // don't allow to move cells too match
-                    float newTranslateX = event.getX() - mStartX + mStartTranslateX;
-                    if (newTranslateX < mTranslateX && mTranslateX > TRANSLATE_X_LEFT_MAX || newTranslateX > mTranslateX && mTranslateX < TRANSLATE_X_RIGHT_MAX)
-                        mTranslateX = event.getX() - mStartX + mStartTranslateX;
-                    float newTranslateY = event.getY() - mStartY + mStartTranslateY;
-                    if (newTranslateY < mTranslateY && mTranslateY > TRANSLATE_Y_LEFT_MAX || newTranslateY > mTranslateY && mTranslateY < TRANSLATE_Y_RIGHT_MAX)
-                        mTranslateY = event.getY() - mStartY + mStartTranslateY;
-
-                    invalidate();
-                    break;
-            }
-
-            if (mPrevAction == MotionEvent.ACTION_MOVE && event.getAction() != MotionEvent.ACTION_MOVE) {
-                mPrevAction = event.getAction();
-            }
-        }
         return true;
     }
 
